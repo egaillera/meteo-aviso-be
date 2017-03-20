@@ -101,8 +101,8 @@ def insert_measurement(measurement):
 		station = Station.query.filter(Station.code == measurement[0][STATION_CODE_IDX]).one()
 	except NoResultFound:
 		# If the station does not exist, create it
-		logger.info('get_mc_data: station ' + measurement[0][STATION_CODE_IDX] + ' not found')
-		logger.info('get_mc_data: creating Station ' + measurement[0][STATION_CODE_IDX])
+		logger.info('Station ' + measurement[0][STATION_CODE_IDX] + ' not found')
+		logger.info('Creating Station ' + measurement[0][STATION_CODE_IDX])
 		station = Station(code=measurement[0][STATION_CODE_IDX],
 		                  name=measurement[0][STATION_NAME_IDX],
 		                  lat=Decimal(measurement[0][LAT_IDX]),
@@ -111,6 +111,7 @@ def insert_measurement(measurement):
 		db.session.commit()
 		
 	# Insert the measurement
+	logger.info('Inserting measurement in station %s' % measurement[0][STATION_CODE_IDX])
 	new_measurement = Measurement(date_created = datetime.datetime.strptime(measurement[1], MC_DATE_FORMAT),
 	         weather_status = measurement[0][CURRENT_WEATHER_IDX],
 	         current_temp = Decimal(measurement[0][CURRENT_TEMP_IDX].replace(',','.')),

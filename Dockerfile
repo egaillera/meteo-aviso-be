@@ -6,5 +6,6 @@ COPY . /meteo-aviso-be
 WORKDIR /meteo-aviso-be
 RUN pip3 install -r requirements.txt
 WORKDIR /meteo-aviso-be/app
+RUN mkdir logs
 ENTRYPOINT ["python3"]
 CMD ["main.py"]
