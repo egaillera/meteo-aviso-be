@@ -5,6 +5,8 @@ from datetime import *
 from decimal import *
 from sqlalchemy.orm.exc import NoResultFound
 
+sys.path.append(os.getcwd())
+
 from models import *
 
 # Constants
