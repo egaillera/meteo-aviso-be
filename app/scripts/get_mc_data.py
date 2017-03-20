@@ -99,6 +99,7 @@ def insert_measurement(measurement):
 		                  lat=Decimal(measurement[0][LAT_IDX]),
 		                  lon=Decimal(measurement[0][LON_IDX]))
 		db.session.add(station)
+		db.session.commit()
 		
 	# Insert the measurement
 	new_measurement = Measurement(date_created = datetime.datetime.strptime(measurement[1], MC_DATE_FORMAT),
@@ -118,6 +119,7 @@ def insert_measurement(measurement):
 	         rainfall = Decimal(measurement[0][RAINFALL_IDX].replace(',','.')),
 	         station = measurement[0][STATION_CODE_IDX])
 	db.session.add(new_measurement)
+	db.session.commit()
 
 	
 
