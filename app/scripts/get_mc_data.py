@@ -3,11 +3,20 @@ import requests
 import re
 from datetime import *
 from decimal import *
+import logging
+from logging.handlers import RotatingFileHandler
 from sqlalchemy.orm.exc import NoResultFound
 
 sys.path.append(os.getcwd())
 
 from models import *
+
+logger = logging.getLogger("get_mc_data")
+logger.setLevel(logging.DEBUG)
+handler = RotatingFileHandler('../app/logs/get_mc_data.log',maxBytes=10000, backupCount=1)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 # Constants
 REGEX_METEO_DATA = u'\[\[<BEGIN:[0-9A-Z]+:DATA>\]\]\n\[\[<([0-9A-Z]+);\(([\-,0-9]+);([\-,0-9]+);([\-,0-9]+);([a-z]+)\);\(([\-,0-9]+);([\-,0-9]+);([\-,0-9]+)\);\(([\-,0-9]+);([\-,0-9]+);([\-,0-9]+)\);\(([\-,0-9]+);([\-,0-9]+);([\-0-9]+)\);\(([-,0-9]+)\);([\/\-\(\)\.;\'&\#\sA-Za-z0-9]+)>\]\]\n\[\[<END:ES[0-9A-Z]+:DATA>\]\]\n-->\n   </description>\n   <georss:point>([\-0-9\.]+) ([\-0-9\.]+)</georss:point>'
@@ -69,7 +78,7 @@ def get_mc_data():
     
     #print(resp)
 
-    print("get_mc_data: loading Meteoclimatic stations")
+    logger.info("Loading Meteoclimatic stations from %s",METEOCLIMATIC_URL)
     if rsp.status_code == 200:
 
         meteo_data = re.findall(REGEX_METEO_DATA,resp)
@@ -79,7 +88,7 @@ def get_mc_data():
         all_data = zip(meteo_data,time_data)
 
     else:
-        print('Error downloading data from meteoclimatic.com')
+        logger.error('Error downloading data from meteoclimatic.com')
         all_data = None
 
     return all_data
@@ -88,12 +97,12 @@ def insert_measurement(measurement):
 	
 	# Search the station linked to the mesasuremnt in the database
 	try:
-		print("get_mc_data: searching station with code " + measurement[0][STATION_CODE_IDX])
+		print("searching station with code " + measurement[0][STATION_CODE_IDX])
 		station = Station.query.filter(Station.code == measurement[0][STATION_CODE_IDX]).one()
 	except NoResultFound:
 		# If the station does not exist, create it
-		print('get_mc_data: station ' + measurement[0][STATION_CODE_IDX] + ' not found')
-		print('get_mc_data: creating Station ' + measurement[0][STATION_CODE_IDX])
+		logger.info('get_mc_data: station ' + measurement[0][STATION_CODE_IDX] + ' not found')
+		logger.info('get_mc_data: creating Station ' + measurement[0][STATION_CODE_IDX])
 		station = Station(code=measurement[0][STATION_CODE_IDX],
 		                  name=measurement[0][STATION_NAME_IDX],
 		                  lat=Decimal(measurement[0][LAT_IDX]),
@@ -129,13 +138,11 @@ def main():
     mc_data = get_mc_data()
     #print_stations(mc_data)
 
-    print('Inserting measurements ..')
+    logger.info('Inserting measurements ..')
     for measurement in mc_data:
         station = insert_measurement(measurement)
         #clean_station(station)
     db.session.commit()
-
-
 
 if __name__ == '__main__':
     main()
