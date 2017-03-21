@@ -13,10 +13,10 @@ COPY . /meteo-aviso-be
 WORKDIR /meteo-aviso-be
 RUN pip3 install -r requirements.txt
 
-# Get ready cron environment
-RUN cp /meteo-aviso-be/etc/cronfile /etc/cron.d/cronfile
-RUN chmod 0644 /etc/cron.d/cronfile
+# Get ready the cron environment
+RUN /usr/bin/crontab /meteo-aviso-be/etc/cronfile 
 RUN touch /var/log/cron.log
+RUN cron && tail -f /var/log/cron.log
 
 # Create logs directory
 WORKDIR /meteo-aviso-be/app
