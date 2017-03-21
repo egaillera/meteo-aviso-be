@@ -3,7 +3,7 @@ MAINTAINER E. Garcia "egaillera@gmail.com"
 
 # Install required software
 RUN apt-get update -y
-RUN apt-get install -y python3-pip python3.5-dev build-essential
+RUN apt-get install -y python3-pip python3.5-dev build-essential vim
 
 # Install cron to populate database
 RUN apt-get install cron
