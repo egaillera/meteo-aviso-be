@@ -16,7 +16,7 @@ RUN pip3 install -r requirements.txt
 # Get ready the cron environment
 RUN /usr/bin/crontab /meteo-aviso-be/etc/cronfile 
 RUN touch /var/log/cron.log
-RUN cron && tail -f /var/log/cron.log
+CMD cron && tail -f /var/log/cron.log
 
 # Create logs directory
 WORKDIR /meteo-aviso-be/app
