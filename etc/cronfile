@@ -1,0 +1,1 @@
+0,15,30,45 * * * * /usr/bin/python3 /meteo-aviso-be/app/scripts/get_mc_data.py
