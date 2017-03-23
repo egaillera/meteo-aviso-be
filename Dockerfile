@@ -3,13 +3,12 @@ FROM python:3.5
 MAINTAINER E. Garcia "egaillera@gmail.com"
 
 RUN groupadd -r meteo && useradd -r -g meteo meteo
-USER meteo
 
 # Install software
 COPY . /home/meteo/meteo-aviso-be
 WORKDIR /home/meteo/meteo-aviso-be
-USER root
 RUN pip3 install -r requirements.txt
+RUN chown -R meteo:meteo /home/meteo/meteo-aviso-be 
 
 # Create logs directory
 WORKDIR /home/meteo/meteo-aviso-be/app
