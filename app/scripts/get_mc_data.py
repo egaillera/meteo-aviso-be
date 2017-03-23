@@ -144,6 +144,7 @@ def main():
         station = insert_measurement(measurement)
         #clean_station(station)
     db.session.commit()
+    logger.info('Finished inserting measurements')
 
 if __name__ == '__main__':
     main()
