@@ -14,5 +14,4 @@ RUN mkdir logs
 # Start server
 #ENTRYPOINT ["python3"]
 #CMD ["main.py"]
-ENTRYPOINT ["/usr/local/bin/uwsgi"]
-CMD ["--http", "0.0.0.0:9090", "--wsgi-file", "/meteo-aviso-be/app/main.py", \ "--callable", "app", "--stats", "0.0.0.0:9091"]
+CMD ["/usr/local/bin/uwsgi", "--http", "0.0.0.0:9090", "--wsgi-file", "/meteo-aviso-be/app/main.py","--callable", "app", "--stats", "0.0.0.0:9091"]
