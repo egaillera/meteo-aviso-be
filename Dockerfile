@@ -6,12 +6,14 @@ RUN groupadd -r meteo && useradd -r -g meteo meteo
 USER meteo
 
 # Install software
-COPY . /meteo-aviso-be
-WORKDIR /meteo-aviso-be
+COPY . /home/meteo/meteo-aviso-be
+WORKDIR /home/meteo/meteo-aviso-be
+USER root
 RUN pip3 install -r requirements.txt
 
 # Create logs directory
-WORKDIR /meteo-aviso-be/app
+WORKDIR /home/meteo/meteo-aviso-be/app
+USER meteo
 RUN mkdir logs
 
 # Start server
