@@ -16,4 +16,4 @@ USER meteo
 RUN mkdir logs
 
 # Start server
-CMD ["/usr/local/bin/uwsgi", "--http", "0.0.0.0:9090", "--wsgi-file", "/meteo-aviso-be/app/main.py","--callable", "app", "--stats", "0.0.0.0:9091"]
+CMD ["/usr/local/bin/uwsgi", "--http", "0.0.0.0:9090", "--wsgi-file", "/home/meteo/meteo-aviso-be/app/main.py","--callable", "app", "--stats", "0.0.0.0:9091"]
