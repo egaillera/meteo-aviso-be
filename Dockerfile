@@ -1,9 +1,6 @@
-FROM ubuntu:latest
-MAINTAINER E. Garcia "egaillera@gmail.com"
+FROM python:3.5
 
-# Install required software
-RUN apt-get update -y
-RUN apt-get install -y python3-pip python3.5-dev build-essential vim
+MAINTAINER E. Garcia "egaillera@gmail.com"
 
 # Install software
 COPY . /meteo-aviso-be
