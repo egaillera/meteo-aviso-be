@@ -3,6 +3,7 @@ FROM python:3.5
 MAINTAINER E. Garcia "egaillera@gmail.com"
 
 RUN groupadd -r meteo && useradd -r -g meteo meteo
+USER meteo
 
 # Install software
 COPY . /meteo-aviso-be
@@ -14,5 +15,4 @@ WORKDIR /meteo-aviso-be/app
 RUN mkdir logs
 
 # Start server
-USER meteo
 CMD ["/usr/local/bin/uwsgi", "--http", "0.0.0.0:9090", "--wsgi-file", "/meteo-aviso-be/app/main.py","--callable", "app", "--stats", "0.0.0.0:9091"]
