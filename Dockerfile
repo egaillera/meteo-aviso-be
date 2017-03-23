@@ -14,6 +14,5 @@ WORKDIR /meteo-aviso-be/app
 RUN mkdir logs
 
 # Start server
-#ENTRYPOINT ["python3"]
-#CMD ["main.py"]
+USER meteo
 CMD ["/usr/local/bin/uwsgi", "--http", "0.0.0.0:9090", "--wsgi-file", "/meteo-aviso-be/app/main.py","--callable", "app", "--stats", "0.0.0.0:9091"]
