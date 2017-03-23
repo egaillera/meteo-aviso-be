@@ -2,6 +2,8 @@ FROM python:3.5
 
 MAINTAINER E. Garcia "egaillera@gmail.com"
 
+RUN groupadd -r meteo && useradd -r -g meteo meteo
+
 # Install software
 COPY . /meteo-aviso-be
 WORKDIR /meteo-aviso-be
