@@ -12,7 +12,7 @@ RUN chown -R meteo:meteo /home/meteo/meteo-aviso-be
 
 # Create logs directory
 USER meteo
-RUN mkdir /home/meteo-aviso-be/app/logs
+RUN mkdir /home/meteo/meteo-aviso-be/app/logs
 
 # Start server
 #CMD ["/usr/local/bin/uwsgi", "--http", "0.0.0.0:9090", "--wsgi-file", "/home/meteo/meteo-aviso-be/app/main.py","--callable", "app", "--stats", "0.0.0.0:9091"]
