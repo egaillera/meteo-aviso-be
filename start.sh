@@ -2,7 +2,7 @@
 
 set -e 
 
-if [ "$ENV" = 'COLLECTION' ]; then 
+if [ "$ENV" = 'COLLECTOR' ]; then 
 	while true 
 	do 
 	   echo "Running Collection Daemon"

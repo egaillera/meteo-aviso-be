@@ -13,7 +13,7 @@ from models import *
 
 logger = logging.getLogger("get_mc_data")
 logger.setLevel(logging.DEBUG)
-handler = RotatingFileHandler('../app/logs/get_mc_data.log',maxBytes=10000, backupCount=1)
+handler = RotatingFileHandler('../app/logs/get_mc_data.log',maxBytes=100000, backupCount=2)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
