@@ -12,5 +12,5 @@ if [ "$ENV" = 'COLLECTION' ]; then
 	
 else 
 	echo "Running Application Server" 
-	exec uwsgi --http 0.0.0.0:9090 --wsgi-file /home/meteo/meteo-aviso-be/app/main.py --callable app --stats 0.0.0.0:9191 
+	exec uwsgi --http 0.0.0.0:9090 --wsgi-file /home/meteo/meteo-aviso-be/app/main.py --callable app --stats 0.0.0.0:9091 
 fi
