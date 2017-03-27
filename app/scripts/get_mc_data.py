@@ -98,7 +98,7 @@ def insert_measurement(measurement):
 	
 	# Search the station linked to the mesasuremnt in the database
 	try:
-		print("searching station with code " + measurement[0][STATION_CODE_IDX])
+		logger.info("searching station with code " + measurement[0][STATION_CODE_IDX])
 		station = Station.query.filter(Station.code == measurement[0][STATION_CODE_IDX]).one()
 	except NoResultFound:
 		# If the station does not exist, create it
