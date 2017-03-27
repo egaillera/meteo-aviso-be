@@ -26,7 +26,8 @@ METEOCLIMATIC_URL = 'http://meteoclimatic.com/feed/rss/ES'
 
 MC_DATE_FORMAT = u'%d-%m-%Y %H:%M'
 
-MAX_MEASUREMENTS = 100
+# Number of days to keep the measurements
+DAYS_TO_KEEP_MEASUREMENTS = 3
 
 STATION_CODE_IDX = 0
 CURRENT_TEMP_IDX = 1
@@ -131,7 +132,11 @@ def insert_measurement(measurement):
 	db.session.add(new_measurement)
 	db.session.commit()
 
+
+def clean_old_data():
 	
+	too_old = datetime.datetime.today() - datetime.timedelta(days=DAYS_TO_KEEP_MEASUREMENTS)
+	Measurement.query.filter(Measurement.date_created < too_old).delete()	
 
 def main():
 
@@ -145,6 +150,10 @@ def main():
         #clean_station(station)
     db.session.commit()
     logger.info('Finished inserting measurements')
+
+    # Remove old measurements
+    logger.info("Removing data older than %s days" % DAYS_TO_KEEP_MEASUREMENTS)
+    clean_old_data()
 
 if __name__ == '__main__':
     main()
