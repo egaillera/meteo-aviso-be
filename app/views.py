@@ -1,5 +1,5 @@
 from app import app
-import models
+from models import Station,Measurement
 
 @app.route('/')
 def homepage():
