@@ -51,6 +51,6 @@ class Measurement(db.Model):
 		    'date_created'    : str(self.date_created),
 		    'weather_status'  : self.weather_status,
 		    'current_temp'    : self.current_temp,
-		    'max_temp'        : self.
+		    'max_temp'        : self.max_temp
 		}
 	
