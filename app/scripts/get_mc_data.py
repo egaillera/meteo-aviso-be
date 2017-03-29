@@ -136,7 +136,8 @@ def insert_measurement(measurement):
 def clean_old_data():
 	
 	too_old = datetime.datetime.today() - datetime.timedelta(days=DAYS_TO_KEEP_MEASUREMENTS)
-	Measurement.query.filter(Measurement.date_created < too_old).delete()	
+	Measurement.query.filter(Measurement.date_created < too_old).delete()
+	db.session.commit()	
 
 def main():
 
