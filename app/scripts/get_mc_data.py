@@ -27,7 +27,7 @@ METEOCLIMATIC_URL = 'http://meteoclimatic.com/feed/rss/ES'
 MC_DATE_FORMAT = u'%d-%m-%Y %H:%M'
 
 # Number of days to keep the measurements
-DAYS_TO_KEEP_MEASUREMENTS = 1
+DAYS_TO_KEEP_MEASUREMENTS = 3
 
 STATION_CODE_IDX = 0
 CURRENT_TEMP_IDX = 1
