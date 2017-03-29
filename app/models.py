@@ -18,8 +18,8 @@ class Station(db.Model):
 		return {
 		    'code'    : self.code,
 		    'name'    : self.name,
-		    'lat'     : self.lat,
-		    'lon'     : self.lon
+		    'lat'     : float(self.lat),
+		    'lon'     : float(self.lon)
 		}	
 		
 		
