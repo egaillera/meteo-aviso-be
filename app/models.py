@@ -12,6 +12,16 @@ class Station(db.Model):
 	def __repr__(self):
 		return '<Station: %s>' % self.code
 		
+	@property
+	def serialize(self):
+		"""Return object data in a serializeable format"""
+		return {
+		    'code'    : self.code,
+		    'name'    : self.name,
+		    'lat'     : self.lat,
+		    'lon'     : self.lon
+		}	
+		
 		
 class Measurement(db.Model):
 	__tablename__ = 'measurement'
@@ -33,4 +43,14 @@ class Measurement(db.Model):
 	wind_direction = db.Column(db.Integer)
 	rainfall = db.Column(db.Numeric(5,2))
 	station = db.Column(db.String(25),db.ForeignKey('station.code'),nullable=False)
+	
+	@property
+	def serialize(self):
+		"""Return object data in a serializeable format"""
+		return {
+		    'date_created'    : str(self.date_created),
+		    'weather_status'  : self.weather_status,
+		    'current_temp'    : self.current_temp,
+		    'max_temp'        : self.
+		}
 	
