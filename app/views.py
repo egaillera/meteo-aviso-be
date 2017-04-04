@@ -13,6 +13,11 @@ def stations():
 	"""Return all the stations"""
 	return jsonify([i.serialize for i in Station.query.all()])
 	
+@app.route('/measurements/<station_code>')
+def measurements(station_code):
+	"""Return all the measurements for a station"""
+	return jsonify([i.serialize for i in Measurement.query.filter(Measurement.station == station_code).all()])	
+	
 @app.route('/closest_station')
 def closest_station():
 	"""Return closest station from /closest_station?lat=lat&lon=lon"""

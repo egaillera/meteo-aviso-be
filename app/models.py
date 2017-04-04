@@ -50,7 +50,19 @@ class Measurement(db.Model):
 		return {
 		    'date_created'    : str(self.date_created),
 		    'weather_status'  : self.weather_status,
-		    'current_temp'    : self.current_temp,
-		    'max_temp'        : self.max_temp
+		    'current_temp'    : float(self.current_temp),
+		    'max_temp'        : float(self.max_temp),
+		    'min_temp'        : float(self.min_temp),
+		    'current_hum'     : float(self.current_hum),
+		    'max_hum'         : float(self.max_hum),
+		    'min_hum'         : float(self.min_hum),
+		    'current_pres'    : float(self.current_pres),
+		    'min_pres'        : float(self.min_pres),
+		    'max_pres'        : float(self.max_pres),
+		    'wind_speed'      : float(self.wind_speed),
+		    'max_gust'        : float(self.max_gust),
+		    'wind_direction'  : self.wind_direction,
+		    'rainfall'        : float(self.rainfall),
+		    'station'         : self.station
 		}
 	
