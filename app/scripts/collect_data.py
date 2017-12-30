@@ -10,62 +10,17 @@ from sqlalchemy.orm.exc import NoResultFound
 sys.path.append(os.getcwd())
 
 from models import *
+
+from get_mc_data import get_mc_data
 from constants import *
 
-logger = logging.getLogger("get_mc_data")
+logger = logging.getLogger("collect_data")
 logger.setLevel(logging.DEBUG)
-handler = RotatingFileHandler('../app/logs/get_mc_data.log',maxBytes=100000, backupCount=2)
+handler = RotatingFileHandler('../app/logs/collect_data.log',maxBytes=100000, backupCount=2)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-
-def print_stations(stations):
-
-     for station in stations:
-         print("Estacion codigo: " + station[0][STATION_CODE_IDX])
-         print("  Fecha de la medicion: " + station[1])
-         print("  Temperatura actual: " + station[0][CURRENT_TEMP_IDX])
-         print("  Temperatura maxima: " + station[0][MAX_TEMP_IDX]) 
-         print("  Temperatura minima: " + station[0][MIN_TEMP_IDX])
-         print("  Estado: " + station[0][CURRENT_WEATHER_IDX])
-         print("  Humedad actual: " + station[0][CURRENT_HUM_IDX])
-         print("  Humedad maxima: " + station[0][MAX_HUM_IDX]) 
-         print("  Humedad minima: " + station[0][MIN_HUM_IDX])
-         print("  Presion actual: " + station[0][CURRENT_PRES_IDX])
-         print("  Presion maxima: " + station[0][MAX_PRES_IDX]) 
-         print("  Presion minima: " + station[0][MIN_PRES_IDX])
-         print("  Velocidad del viento: " + station[0][CURRENT_WIND_SPEED_IDX])
-         print("  Racha maxima: " + station[0][MAX_WIND_SPEED_IDX]) 
-         print("  Direccion del viento: " + station[0][CURRENT_WIND_DIRECTION_IDX])
-         print("  Precipitacion: " + station[0][RAINFALL_IDX])
-         print("  Nombre de la estacion: " + station[0][STATION_NAME_IDX])
-         print("  Localizacion: (" + station[0][LAT_IDX] + ", " + station[0][LON_IDX] + ")")
-
-
-def get_mc_data():
-    
-    # Request Meteoclimatic data
-    rsp = requests.get(METEOCLIMATIC_URL)
-    resp = rsp.content.decode('utf8')
-    
-    #print(resp)
-
-    logger.info("Loading Meteoclimatic stations from %s",METEOCLIMATIC_URL)
-    if rsp.status_code == 200:
-
-        meteo_data = re.findall(REGEX_METEO_DATA,resp)
-        time_data = re.findall(REGEX_UPDATE_TIME_DATA,resp)
-        time_data_conv = [datetime.datetime.strptime(x, MC_DATE_FORMAT) for x in time_data]
-
-        # Merge measurements with time and date
-        all_data = zip(meteo_data,time_data_conv)
-
-    else:
-        logger.error('Error downloading data from meteoclimatic.com')
-        all_data = None
-
-    return all_data
 	
 def insert_measurement(measurement):
 	
