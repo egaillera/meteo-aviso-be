@@ -12,6 +12,7 @@ sys.path.append(os.getcwd())
 from models import *
 
 from get_mc_data import get_mc_data
+from get_aemet_data import get_aemet_data
 from constants import *
 
 logger = logging.getLogger("collect_data")
@@ -21,7 +22,8 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-	
+		
+
 def insert_measurement(measurement):
 	
 	# Search the station linked to the mesasuremnt in the database
@@ -38,7 +40,8 @@ def insert_measurement(measurement):
 		                  lon=Decimal(measurement[0][LON_IDX]))
 		db.session.add(station)
 		db.session.commit()
-		
+			
+	
 	# Insert the measurement
 	logger.info('Inserting measurement in station %s' % measurement[0][STATION_CODE_IDX])
 	new_measurement = Measurement(date_created = measurement[1],
@@ -70,7 +73,8 @@ def clean_old_data():
 def main():
 
     # Request Meteoclimatic data
-    mc_data = get_mc_data()
+    #mc_data = get_mc_data()
+    mc_data = get_aemet_data()
     #print_stations(mc_data)
 
     logger.info('Inserting measurements ..')
