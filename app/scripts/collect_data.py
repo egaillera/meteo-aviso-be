@@ -48,19 +48,19 @@ def insert_measurement(measurement):
 	try:
 		logger.info('Inserting measurement in station %s' % measurement[0][STATION_CODE_IDX])
 		new_measurement = Measurement(date_created = measurement[1],
-	         weather_status = measurement[0][CURRENT_WEATHER_IDX],
+	         #weather_status = measurement[0][CURRENT_WEATHER_IDX],
 	         current_temp = Decimal(measurement[0][CURRENT_TEMP_IDX].replace(',','.')),
-	         max_temp = Decimal(measurement[0][MAX_TEMP_IDX].replace(',','.')),
-	         min_temp = Decimal(measurement[0][MIN_TEMP_IDX].replace(',','.')),
+	         #max_temp = Decimal(measurement[0][MAX_TEMP_IDX].replace(',','.')),
+	         #min_temp = Decimal(measurement[0][MIN_TEMP_IDX].replace(',','.')),
 	         current_hum = Decimal(measurement[0][CURRENT_HUM_IDX].replace(',','.')),
-	         max_hum = Decimal(measurement[0][MAX_HUM_IDX].replace(',','.')),
-	         min_hum = Decimal(measurement[0][MIN_HUM_IDX].replace(',','.')),
+	         #max_hum = Decimal(measurement[0][MAX_HUM_IDX].replace(',','.')),
+	         #min_hum = Decimal(measurement[0][MIN_HUM_IDX].replace(',','.')),
 	         current_pres = Decimal(measurement[0][CURRENT_PRES_IDX].replace(',','.')),
-	         max_pres = Decimal(measurement[0][MAX_PRES_IDX].replace(',','.')),
-	         min_pres = Decimal(measurement[0][MIN_PRES_IDX].replace(',','.')),
+	         #max_pres = Decimal(measurement[0][MAX_PRES_IDX].replace(',','.')),
+	         #min_pres = Decimal(measurement[0][MIN_PRES_IDX].replace(',','.')),
 	         wind_speed = Decimal(measurement[0][CURRENT_WIND_SPEED_IDX].replace(',','.')),
 	         max_gust = Decimal(measurement[0][MAX_WIND_SPEED_IDX].replace(',','.')),
-	         wind_direction = int(measurement[0][CURRENT_WIND_DIRECTION_IDX]),
+	         wind_direction = Decimal(measurement[0][CURRENT_WIND_DIRECTION_IDX].replace(',','.')),
 	         rainfall = Decimal(measurement[0][RAINFALL_IDX].replace(',','.')),
 	         station = measurement[0][STATION_CODE_IDX])
 		db.session.add(new_measurement)
@@ -78,17 +78,22 @@ def clean_old_data():
 
 def main():
 
-    # Request Meteoclimatic data
-    #mc_data = get_mc_data()
-    mc_data = get_aemet_data()
-    #print_stations(mc_data)
+    # Request AEMTE and Meteoclimatic data
+    mc_data = get_mc_data()
+    aemet_data = get_aemet_data()
 
-    logger.info('Inserting measurements ..')
+    logger.info('Inserting Meteoclimatic measurements ..')
     for measurement in mc_data:
         station = insert_measurement(measurement)
-        #clean_station(station)
+    logger.info('Finished inserting Meteoclimatic measurements')
+
+    logger.info('Inserting AEMET measurements ..')
+    for measurement in aemet_data:
+        station = insert_measurement(measurement)
+    logger.info('Finished inserting AEMET measurements')
+
     db.session.commit()
-    logger.info('Finished inserting measurements')
+
 
     # Remove old measurements
     logger.info("Removing data older than %s days" % DAYS_TO_KEEP_MEASUREMENTS)

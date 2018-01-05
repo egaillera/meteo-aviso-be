@@ -32,19 +32,19 @@ class Measurement(db.Model):
 	
 	id = db.Column(db.Integer, primary_key=True)
 	date_created = db.Column(db.DateTime)
-	weather_status = db.Column(db.String(20))
+	#weather_status = db.Column(db.String(20))
 	current_temp = db.Column(db.Numeric(4,2))
-	max_temp = db.Column(db.Numeric(4,2))
-	min_temp = db.Column(db.Numeric(4,2))
+	#max_temp = db.Column(db.Numeric(4,2))
+	#min_temp = db.Column(db.Numeric(4,2))
 	current_hum = db.Column(db.Numeric(5,2))
-	max_hum = db.Column(db.Numeric(5,2))
-	min_hum = db.Column(db.Numeric(5,2))
+	#max_hum = db.Column(db.Numeric(5,2))
+	#min_hum = db.Column(db.Numeric(5,2))
 	current_pres = db.Column(db.Numeric(6,2))
-	max_pres = db.Column(db.Numeric(6,2))
-	min_pres = db.Column(db.Numeric(6,2))
+	#max_pres = db.Column(db.Numeric(6,2))
+	#min_pres = db.Column(db.Numeric(6,2))
 	wind_speed = db.Column(db.Numeric(5,2))
 	max_gust = db.Column(db.Numeric(5,2))
-	wind_direction = db.Column(db.Integer)
+	wind_direction = db.Column(db.Numeric(3,2))
 	rainfall = db.Column(db.Numeric(5,2))
 	station = db.Column(db.String(25),db.ForeignKey('station.code'),nullable=False)
 	
@@ -55,14 +55,14 @@ class Measurement(db.Model):
 		    'date_created'    : str(self.date_created),
 		    'weather_status'  : self.weather_status,
 		    'current_temp'    : float(self.current_temp),
-		    'max_temp'        : float(self.max_temp),
-		    'min_temp'        : float(self.min_temp),
+		    #'max_temp'        : float(self.max_temp),
+		    #'min_temp'        : float(self.min_temp),
 		    'current_hum'     : float(self.current_hum),
-		    'max_hum'         : float(self.max_hum),
-		    'min_hum'         : float(self.min_hum),
+		    #'max_hum'         : float(self.max_hum),
+		    #'min_hum'         : float(self.min_hum),
 		    'current_pres'    : float(self.current_pres),
-		    'min_pres'        : float(self.min_pres),
-		    'max_pres'        : float(self.max_pres),
+		    #'min_pres'        : float(self.min_pres),
+		    #'max_pres'        : float(self.max_pres),
 		    'wind_speed'      : float(self.wind_speed),
 		    'max_gust'        : float(self.max_gust),
 		    'wind_direction'  : self.wind_direction,
