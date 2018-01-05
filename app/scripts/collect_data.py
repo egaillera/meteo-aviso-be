@@ -6,6 +6,8 @@ from decimal import *
 import logging
 from logging.handlers import RotatingFileHandler
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy import exc
+
 
 sys.path.append(os.getcwd())
 
@@ -43,8 +45,9 @@ def insert_measurement(measurement):
 			
 	
 	# Insert the measurement
-	logger.info('Inserting measurement in station %s' % measurement[0][STATION_CODE_IDX])
-	new_measurement = Measurement(date_created = measurement[1],
+	try:
+		logger.info('Inserting measurement in station %s' % measurement[0][STATION_CODE_IDX])
+		new_measurement = Measurement(date_created = measurement[1],
 	         weather_status = measurement[0][CURRENT_WEATHER_IDX],
 	         current_temp = Decimal(measurement[0][CURRENT_TEMP_IDX].replace(',','.')),
 	         max_temp = Decimal(measurement[0][MAX_TEMP_IDX].replace(',','.')),
@@ -60,8 +63,11 @@ def insert_measurement(measurement):
 	         wind_direction = int(measurement[0][CURRENT_WIND_DIRECTION_IDX]),
 	         rainfall = Decimal(measurement[0][RAINFALL_IDX].replace(',','.')),
 	         station = measurement[0][STATION_CODE_IDX])
-	db.session.add(new_measurement)
-	db.session.commit()
+		db.session.add(new_measurement)
+		db.session.commit()
+	except exc.IntegrityError:
+		logger.info('Trying to insert a duplicated measaurment .. ignoring it')
+		db.session.rollback()
 
 
 def clean_old_data():

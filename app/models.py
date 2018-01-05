@@ -1,5 +1,6 @@
 import datetime, re 
 from app import db
+from sqlalchemy import Index,UniqueConstraint
 
 class Station(db.Model):
 	__tablename__ = 'station'
@@ -25,6 +26,9 @@ class Station(db.Model):
 		
 class Measurement(db.Model):
 	__tablename__ = 'measurement'
+	
+	# Unique index to avoid potential duplication of mesaruments
+	__table_args__ = (Index('date_station_idx','date_created','station',unique=True),) 
 	
 	id = db.Column(db.Integer, primary_key=True)
 	date_created = db.Column(db.DateTime)
@@ -65,4 +69,6 @@ class Measurement(db.Model):
 		    'rainfall'        : float(self.rainfall),
 		    'station'         : self.station
 		}
+		
+	
 	
