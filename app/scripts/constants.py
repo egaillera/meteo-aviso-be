@@ -32,8 +32,8 @@ STATION_NAME_IDX = 15
 LAT_IDX = 16
 LON_IDX = 17
 
-# Fields of the AEMET stations to fill in MeteoAviso station model; order is relevant so for each field
-# there is a definied postion in the array
+# Fields of the AEMET stations to fill in MeteoAviso station model; order is relevant becasue for 
+# each field there is a defined postion in the array
 FIELDS_TO_FILL = {'idema': STATION_CODE_IDX,'ta': CURRENT_TEMP_IDX,'lat': LAT_IDX,'lon': LON_IDX,\
                   'ubi': STATION_NAME_IDX,'prec': RAINFALL_IDX, 'vv': CURRENT_WIND_SPEED_IDX, 
                   'vmax': MAX_WIND_SPEED_IDX, 'dv': CURRENT_WIND_DIRECTION_IDX, 'hr': CURRENT_HUM_IDX,

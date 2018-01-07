@@ -8,7 +8,6 @@ from logging.handlers import RotatingFileHandler
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import exc
 
-
 sys.path.append(os.getcwd())
 
 from models import *
@@ -16,6 +15,7 @@ from models import *
 from get_mc_data import get_mc_data
 from get_aemet_data import get_aemet_data
 from constants import *
+from util.distance import *
 
 logger = logging.getLogger("collect_data")
 logger.setLevel(logging.DEBUG)
@@ -25,7 +25,6 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 		
-
 def insert_measurement(measurement):
 	
 	# Search the station linked to the mesasuremnt in the database
@@ -36,28 +35,25 @@ def insert_measurement(measurement):
 		# If the station does not exist, create it
 		logger.info('Station ' + measurement[0][STATION_CODE_IDX] + ' not found')
 		logger.info('Creating Station ' + measurement[0][STATION_CODE_IDX])
+		
 		station = Station(code=measurement[0][STATION_CODE_IDX],
 		                  name=measurement[0][STATION_NAME_IDX],
 		                  lat=Decimal(measurement[0][LAT_IDX]),
-		                  lon=Decimal(measurement[0][LON_IDX]))
+		                  lon=Decimal(measurement[0][LON_IDX]),
+		                  prov=get_province(measurement[0][STATION_NAME_IDX])
+		                  )
 		db.session.add(station)
 		db.session.commit()
+		logger.info('Created Station ' + measurement[0][STATION_CODE_IDX])
 			
 	
 	# Insert the measurement
 	try:
 		logger.info('Inserting measurement in station %s' % measurement[0][STATION_CODE_IDX])
 		new_measurement = Measurement(date_created = measurement[1],
-	         #weather_status = measurement[0][CURRENT_WEATHER_IDX],
 	         current_temp = Decimal(measurement[0][CURRENT_TEMP_IDX].replace(',','.')),
-	         #max_temp = Decimal(measurement[0][MAX_TEMP_IDX].replace(',','.')),
-	         #min_temp = Decimal(measurement[0][MIN_TEMP_IDX].replace(',','.')),
 	         current_hum = Decimal(measurement[0][CURRENT_HUM_IDX].replace(',','.')),
-	         #max_hum = Decimal(measurement[0][MAX_HUM_IDX].replace(',','.')),
-	         #min_hum = Decimal(measurement[0][MIN_HUM_IDX].replace(',','.')),
 	         current_pres = Decimal(measurement[0][CURRENT_PRES_IDX].replace(',','.')),
-	         #max_pres = Decimal(measurement[0][MAX_PRES_IDX].replace(',','.')),
-	         #min_pres = Decimal(measurement[0][MIN_PRES_IDX].replace(',','.')),
 	         wind_speed = Decimal(measurement[0][CURRENT_WIND_SPEED_IDX].replace(',','.')),
 	         max_gust = Decimal(measurement[0][MAX_WIND_SPEED_IDX].replace(',','.')),
 	         wind_direction = Decimal(measurement[0][CURRENT_WIND_DIRECTION_IDX].replace(',','.')),
@@ -78,10 +74,11 @@ def clean_old_data():
 
 def main():
 
-    # Request AEMTE and Meteoclimatic data
+    # Request AEMET and Meteoclimatic data
     mc_data = get_mc_data()
     aemet_data = get_aemet_data()
 
+    
     logger.info('Inserting Meteoclimatic measurements ..')
     for measurement in mc_data:
         station = insert_measurement(measurement)
