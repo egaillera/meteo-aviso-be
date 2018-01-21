@@ -34,7 +34,7 @@ class Measurement(db.Model):
 	
 	id = db.Column(db.Integer, primary_key=True)
 	date_created = db.Column(db.DateTime)
-	current_temp = db.Column(db.Numeric(4,2))
+	current_temp = db.Column(db.Numeric(5,2))
 	current_hum = db.Column(db.Numeric(5,2))
 	current_pres = db.Column(db.Numeric(6,2))
 	wind_speed = db.Column(db.Numeric(5,2))
