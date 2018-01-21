@@ -39,7 +39,7 @@ class Measurement(db.Model):
 	current_pres = db.Column(db.Numeric(6,2))
 	wind_speed = db.Column(db.Numeric(5,2))
 	max_gust = db.Column(db.Numeric(5,2))
-	wind_direction = db.Column(db.Numeric(3,2))
+	wind_direction = db.Column(db.Numeric(5,2))
 	rainfall = db.Column(db.Numeric(5,2))
 	station = db.Column(db.String(25),db.ForeignKey('station.code'),nullable=False)
 	
