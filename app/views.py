@@ -26,4 +26,10 @@ def closest_station():
 	
 	return get_closest_station(lat,lon) + '\n'
 	
+@app.route('/token', methods=['POST'])
+def save_token():
+	"""Save the token to the user table in the database"""
+	print(request.form)
+	return jsonify(token="token",status=200)
+	
 	
