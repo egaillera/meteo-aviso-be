@@ -6,7 +6,7 @@ if [ "$ENV" = 'COLLECTOR' ]; then
 	while true 
 	do 
 	   echo "Running Collection Daemon"
-	   python "/home/meteo/meteo-aviso-be/app/scripts/get_mc_data.py" 
+	   python "/home/meteo/meteo-aviso-be/app/scripts/collect_data.py" 
 	   sleep 900
 	done
 	

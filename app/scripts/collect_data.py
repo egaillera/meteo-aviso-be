@@ -76,13 +76,13 @@ def main():
 
     # Request AEMET and Meteoclimatic data
     mc_data = get_mc_data()
-    aemet_data = get_aemet_data()
+    #aemet_data = get_aemet_data()
 
     
-    logger.info('Inserting Meteoclimatic measurements ..')
-    for measurement in mc_data:
-        station = insert_measurement(measurement)
-    logger.info('Finished inserting Meteoclimatic measurements')
+    #logger.info('Inserting Meteoclimatic measurements ..')
+    #for measurement in mc_data:
+     #   station = insert_measurement(measurement)
+    #logger.info('Finished inserting Meteoclimatic measurements')
 
     logger.info('Inserting AEMET measurements ..')
     for measurement in aemet_data:
