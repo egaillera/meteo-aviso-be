@@ -75,8 +75,8 @@ def clean_old_data():
 def main():
 
     # Request AEMET and Meteoclimatic data
-    mc_data = get_mc_data()
-    #aemet_data = get_aemet_data()
+    #mc_data = get_mc_data()
+    aemet_data = get_aemet_data()
 
     
     #logger.info('Inserting Meteoclimatic measurements ..')
