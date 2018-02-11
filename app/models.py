@@ -58,5 +58,21 @@ class Measurement(db.Model):
 		    'station'         : self.station
 		}
 		
+class User(db.Model):
+	__tablename__ = 'user'
+	
+	email = db.Column(db.String(255))
+	device_id = db.Column(db.String(100), primary_key=True)
+	notif_token = db.Column(db.String(100))
+	
+	@property
+	def serialize(self):
+		"""Return object data in a serializeable format"""
+		return {
+			'e-mail'	: self.email,
+			'Device Id'	: self.device_id,
+			'Token'		: self.notif_token
+		}
+		
 	
 	
