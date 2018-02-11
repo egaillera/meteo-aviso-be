@@ -61,9 +61,12 @@ class Measurement(db.Model):
 class User(db.Model):
 	__tablename__ = 'user'
 	
+	# Unique index to avoid potential duplication of measurements
+	__table_args__ = (Index('device_id_idx','device_id',unique=True),)
+	
 	id = db.Column(db.Integer, primary_key=True)
 	email = db.Column(db.String(255), nullable=False)
-	device_id = db.Column(db.String(100), primary_key=True)
+	device_id = db.Column(db.String(100), nullable=False)
 	notif_token = db.Column(db.String(100), nullable=False)
 	
 	@property
