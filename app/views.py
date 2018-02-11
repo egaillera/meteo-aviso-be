@@ -2,6 +2,7 @@ from app import app
 from models import Station,Measurement
 from flask import jsonify,request
 from util.distance import get_closest_station
+import db_access
 
 @app.route('/')
 def homepage():
@@ -29,7 +30,9 @@ def closest_station():
 @app.route('/token', methods=['POST'])
 def save_token():
 	"""Save the token to the user table in the database"""
-	print(request.form)
-	return jsonify(token="token",status=200)
+	if db_access.insert_user(request.form.to_dict()):
+		return jsonify(token="token",status=200)
+	else:
+		return jsonify(token="token",status=500)
 	
 	
