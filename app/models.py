@@ -29,7 +29,7 @@ class Station(db.Model):
 class Measurement(db.Model):
 	__tablename__ = 'measurement'
 	
-	# Unique index to avoid potential duplication of mesaruments
+	# Unique index to avoid potential duplication of measurements
 	__table_args__ = (Index('date_station_idx','date_created','station',unique=True),) 
 	
 	id = db.Column(db.Integer, primary_key=True)
@@ -63,7 +63,7 @@ class User(db.Model):
 	
 	id = db.Column(db.Integer, primary_key=True)
 	email = db.Column(db.String(255), nullable=False)
-	device_id = db.Column(db.String(100), nullable=False)
+	device_id = db.Column(db.String(100), primary_key=True)
 	notif_token = db.Column(db.String(100), nullable=False)
 	
 	@property
