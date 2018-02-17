@@ -1,4 +1,4 @@
-from models import Station,Measurement
+from models import Station
 import numpy
 import scipy.spatial
 import datetime
@@ -8,10 +8,7 @@ import editdistance
 
 
 
-def get_closest_station(lat,lon):
-
-    # Get all stations that took a measurement today 
-    active_stations = Station.query.all()
+def get_closest_station(active_stations,lat,lon):
 
     coord = []
     for station in active_stations:
@@ -22,7 +19,7 @@ def get_closest_station(lat,lon):
     point = numpy.array([[float(lat),float(lon)]])
     dist,index = mytree.query(point)
 
-    return active_stations[index[0]].name
+    return active_stations[index[0]]
 
 
 def load_cities():

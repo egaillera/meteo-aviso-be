@@ -1,8 +1,8 @@
 from app import app
 from models import Station,Measurement
 from flask import jsonify,request
-from util.distance import get_closest_station
-import db_access
+import db_access.users
+import db_access.measurement
 
 @app.route('/')
 def homepage():
@@ -19,18 +19,18 @@ def measurements(station_code):
 	"""Return all the measurements for a station"""
 	return jsonify([i.serialize for i in Measurement.query.filter(Measurement.station == station_code).all()])	
 	
-@app.route('/closest_station')
+@app.route('/closest_measurement')
 def closest_station():
-	"""Return closest station from /closest_station?lat=lat&lon=lon"""
+	"""Return closest measurement from /closest_measurement?lat=lat&lon=lon"""
 	lat = request.args.get("lat")
 	lon = request.args.get("lon")
 	
-	return get_closest_station(lat,lon) + '\n'
+	return jsonify(db_access.measurement.get_closest_measurement(lat,lon))
 	
 @app.route('/token', methods=['POST'])
 def save_token():
 	"""Save the token to the user table in the database"""
-	if db_access.insert_user(request.form.to_dict()):
+	if db_access.users.insert_user(request.form.to_dict()):
 		return jsonify(token="token",status=200)
 	else:
 		return jsonify(token="token",status=500)

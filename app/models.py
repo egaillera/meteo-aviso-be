@@ -53,7 +53,7 @@ class Measurement(db.Model):
 		    'current_pres'    : float(self.current_pres),
 		    'wind_speed'      : float(self.wind_speed),
 		    'max_gust'        : float(self.max_gust),
-		    'wind_direction'  : self.wind_direction,
+		    'wind_direction'  : float(self.wind_direction),
 		    'rainfall'        : float(self.rainfall),
 		    'station'         : self.station
 		}
