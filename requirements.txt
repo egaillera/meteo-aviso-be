@@ -2,10 +2,12 @@ appdirs==1.4.3
 click==6.7
 editdistance==0.4
 Flask==0.12
+Flask-Limiter==1.0.1
 Flask-SQLAlchemy==2.2
 geopy==1.11.0
 itsdangerous==0.24
 Jinja2==2.9.5
+limits==1.3
 MarkupSafe==1.0
 numpy==1.12.1
 packaging==16.8
