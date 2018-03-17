@@ -73,28 +73,26 @@ def clean_old_data():
 	db.session.commit()	
 
 def main():
-
-    # Request AEMET and Meteoclimatic data
-    #mc_data = get_mc_data()
-    aemet_data = get_aemet_data()
-
-    
-    #logger.info('Inserting Meteoclimatic measurements ..')
-    #for measurement in mc_data:
-     #   station = insert_measurement(measurement)
-    #logger.info('Finished inserting Meteoclimatic measurements')
-
-    logger.info('Inserting AEMET measurements ..')
-    for measurement in aemet_data:
-        station = insert_measurement(measurement)
-    logger.info('Finished inserting AEMET measurements')
-
-    db.session.commit()
-
-
-    # Remove old measurements
-    logger.info("Removing data older than %s days" % DAYS_TO_KEEP_MEASUREMENTS)
-    clean_old_data()
+	
+	# Request AEMET and Meteoclimatic data
+	if "METEOCLIMATIC" in os.environ:
+		mc_data = get_mc_data()
+		logger.info('Inserting Meteoclimatic measurements ..')
+		for measurement in mc_data:
+			station = insert_measurement(measurement)
+		logger.info('Finished inserting Meteoclimatic measurements')
+		
+	aemet_data = get_aemet_data()
+	logger.info('Inserting AEMET measurements ..')
+	for measurement in aemet_data:
+		station = insert_measurement(measurement)
+	logger.info('Finished inserting AEMET measurements')
+	
+	db.session.commit()
+	
+	# Remove old measurements
+	logger.info("Removing data older than %s days" % DAYS_TO_KEEP_MEASUREMENTS)
+	clean_old_data()
 
 if __name__ == '__main__':
-    main()
+	main()
