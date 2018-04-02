@@ -3,14 +3,6 @@ from models import Station,Measurement
 from flask import jsonify,request
 import db_access.users
 import db_access.measurement
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-
-limiter = Limiter(
-                  app,
-                  key_func=get_remote_address,
-                  default_limits=["50 per day"]
-)
 
 
 @app.route('/')

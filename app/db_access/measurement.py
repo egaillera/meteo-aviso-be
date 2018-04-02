@@ -2,7 +2,16 @@ from app import app
 from sqlalchemy.orm.exc import NoResultFound
 from models import *
 from util.distance import get_closest_station
+import datetime,pytz
 
+def sp_date(date_utc):
+	
+	my_date = datetime.datetime.strptime(date_utc,'%Y-%m-%d %H:%M:%S')
+	my_date_utc = my_date_utc = my_date.replace(tzinfo=pytz.timezone('UTC'))
+	my_date_spain = my_date_spain = my_date_utc.astimezone(pytz.timezone('Europe/Madrid'))
+	
+	return my_date_spain.strftime('%Y-%m-%d %H:%M:%S')
+	
 # TODO: check errors in query
 def get_closest_measurement(lat,lon):
 	
@@ -30,7 +39,7 @@ def get_closest_measurement(lat,lon):
 
 def get_last_measurement(station_code):
 	
-	app.logger.info("---> get_last_measurement()")
+	app.logger.info("---> get_last_measurement() from " + station_code)
 	
 	data = None
 	
@@ -44,18 +53,13 @@ def get_last_measurement(station_code):
 		# Add station name
 		data['name'] = Station.query.filter(Station.code == station_code).one().name
 		
+		# Convert to Spanish time
+		data['date_created'] = sp_date(data['date_created'])
 	
 	except NoResultFound:
 		data = None
 	
+	app.logger.debug(data)
 	return data
-	
-	
-	
-	
-
-
-
-    
 	
 	

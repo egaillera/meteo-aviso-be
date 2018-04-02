@@ -27,7 +27,7 @@ logger.addHandler(handler)
 		
 def insert_measurement(measurement):
 	
-	# Search the station linked to the mesasuremnt in the database
+	# Search the station linked to the measuremnt in the database
 	try:
 		logger.info("searching station with code " + measurement[0][STATION_CODE_IDX])
 		station = Station.query.filter(Station.code == measurement[0][STATION_CODE_IDX]).one()

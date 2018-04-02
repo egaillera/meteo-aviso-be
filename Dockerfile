@@ -7,6 +7,7 @@ RUN groupadd -r meteo && useradd -r -g meteo meteo
 # Install software
 COPY . /home/meteo/meteo-aviso-be
 WORKDIR /home/meteo/meteo-aviso-be
+RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 RUN chown -R meteo:meteo /home/meteo/meteo-aviso-be 
 
