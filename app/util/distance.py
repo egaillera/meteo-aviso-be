@@ -35,12 +35,15 @@ def load_cities():
 Returns the digits that identify Spanish province (8 for Barcelona, 28 for Madrid, ...)
 as a integer
 '''
-def get_province(city):
+def get_province(city,code):
 	
-	cit_dict = load_cities()
-	
-	# Find the most similar name of the city in the dict
-	return int(cit_dict[min(cit_dict.keys(), key=lambda v: editdistance.eval(city.lower(),v))])
+	# If code is like ESPVA0300000003802E (Meteoclimatic), province is in position 5
+	if len(code) == 19 and code[0:2] == 'ES':
+		return int(code[5:7])
+	else:
+		# If it's AEMET station, try to find the most similar name in the dict
+		cit_dict = load_cities()
+		return int(cit_dict[min(cit_dict.keys(), key=lambda v: editdistance.eval(city.lower(),v))])
 	
 
 	

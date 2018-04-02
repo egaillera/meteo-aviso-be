@@ -40,7 +40,8 @@ def insert_measurement(measurement):
 		                  name=measurement[0][STATION_NAME_IDX],
 		                  lat=Decimal(measurement[0][LAT_IDX]),
 		                  lon=Decimal(measurement[0][LON_IDX]),
-		                  prov=get_province(measurement[0][STATION_NAME_IDX])
+		                  prov=get_province(measurement[0][STATION_NAME_IDX],
+		                                    measurement[0][STATION_CODE_IDX])
 		                  )
 		db.session.add(station)
 		db.session.commit()
