@@ -18,7 +18,7 @@ def get_closest_measurement(lat,lon):
 	app.logger.info("---> get_closest_measurement to lat=%s, lon=%s" % (lat,lon))
 	
 	# Get all stations with a Measurement in the last day
-	recent = datetime.today() - timedelta(days=1)
+	recent = datetime.datetime.today() - datetime.timedelta(days=1)
 	m = Measurement.query.filter(Measurement.date_created > recent).subquery('m')
 	active_stations = Station.query.filter(Station.code == m.c.station)
 	

@@ -1,3 +1,4 @@
+from app import app
 from models import Station
 import numpy
 import scipy.spatial
@@ -9,17 +10,21 @@ import editdistance
 
 
 def get_closest_station(active_stations,lat,lon):
-
-    coord = []
-    for station in active_stations:
-        coord.append((station.lat,station.lon))
-    np_coord = numpy.array(coord)
-    mytree = scipy.spatial.cKDTree(np_coord)
-
-    point = numpy.array([[float(lat),float(lon)]])
-    dist,index = mytree.query(point)
-
-    return active_stations[index[0]]
+	
+	app.logger.debug("---> get_closest_station() to lat=%s, lon=%s" % (lat,lon))
+	
+	coord = []
+	
+	for station in active_stations:
+		coord.append((station.lat,station.lon))
+		
+	np_coord = numpy.array(coord)
+	mytree = scipy.spatial.cKDTree(np_coord)
+	point = numpy.array([[float(lat),float(lon)]])
+	dist,index = mytree.query(point)
+	
+	app.logger.debug("Closest station: %s" % active_stations[index[0]])
+	return active_stations[index[0]]
 
 
 def load_cities():
