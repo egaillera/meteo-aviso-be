@@ -95,6 +95,7 @@ def insert_all(measurements):
 	                    station = measurement[0][STATION_CODE_IDX]) for measurement in measurements]
 	
 	try:
+		#logger.debug(measurement_list)
 		db.session.bulk_save_objects(measurement_list)
 		db.session.commit()
 	except exc.IntegrityError:

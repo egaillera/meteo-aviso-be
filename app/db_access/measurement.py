@@ -15,9 +15,10 @@ def sp_date(date_utc):
 # TODO: check errors in query
 def get_closest_measurement(lat,lon):
 	
-	app.logger.info("---> get_closest_measurement()")
+	app.logger.info("---> get_closest_measurement to lat=%s, lon=%s" % (lat,lon))
 	
 	# Get all stations
+	# TODO: get only station with a Measurement
 	active_stations = Station.query.all()
 	
 	# Get the closest one
@@ -25,17 +26,7 @@ def get_closest_measurement(lat,lon):
 	
 	return get_last_measurement(closest_station.code)
 	
-	'''
-	# Get the most recent measurement 
-	data = Measurement.query.filter(Measurement.station==closest_station.code).\
-	                   order_by(Measurement.date_created.desc()).first().\
-	                   serialize
 	
-	# Add station name to the mesaurement
-	data['name'] = closest_station.name
-	
-	return data
-	'''	
 
 def get_last_measurement(station_code):
 	

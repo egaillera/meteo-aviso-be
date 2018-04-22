@@ -59,7 +59,7 @@ def get_mc_data():
         time_data_conv = [datetime.datetime.strptime(x, MC_DATE_FORMAT) for x in time_data]
 
         # Merge measurements with time and date
-        all_data = zip(meteo_data,time_data_conv)
+        all_data = list(zip(meteo_data,time_data_conv))
 
     else:
         logger.error('Error downloading data from meteoclimatic.com')
