@@ -14,6 +14,10 @@ class Station(db.Model):
 	def __repr__(self):
 		return '<Station: %s>' % self.code
 		
+	# To compare Stations
+	def __eq__(self, other):
+		return self.code == other.code
+		
 	@property
 	def serialize(self):
 		"""Return object data in a serializeable format"""
@@ -30,7 +34,7 @@ class Measurement(db.Model):
 	__tablename__ = 'measurement'
 	
 	# Unique index to avoid potential duplication of measurements
-	__table_args__ = (Index('date_station_idx','date_created','station',unique=True),) 
+	#__table_args__ = (Index('date_station_idx','date_created','station',unique=True),) 
 	
 	id = db.Column(db.Integer, primary_key=True)
 	date_created = db.Column(db.DateTime)
@@ -42,6 +46,7 @@ class Measurement(db.Model):
 	wind_direction = db.Column(db.Numeric(5,2))
 	rainfall = db.Column(db.Numeric(5,2))
 	station = db.Column(db.String(25),db.ForeignKey('station.code'),nullable=False)
+	
 	
 	@property
 	def serialize(self):
