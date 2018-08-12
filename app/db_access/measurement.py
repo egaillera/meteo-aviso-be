@@ -22,6 +22,8 @@ def get_closest_measurement(lat,lon):
 	m = Measurement.query.filter(Measurement.date_created > recent).subquery('m')
 	active_stations = Station.query.filter(Station.code == m.c.station)
 	
+	#active_stations = Station.query.all()
+	
 	# Get the closest one
 	closest_station = get_closest_station(active_stations,lat,lon)
 	

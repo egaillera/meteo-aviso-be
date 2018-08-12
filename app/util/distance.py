@@ -6,8 +6,7 @@ import datetime
 from geopy.geocoders import Nominatim
 import csv
 import editdistance
-
-
+import unidecode
 
 def get_closest_station(active_stations,lat,lon):
 	
@@ -27,12 +26,28 @@ def get_closest_station(active_stations,lat,lon):
 	return active_stations[index[0]]
 
 
+'''
+Usually, real name of city is at the beginning, before '(', '-' or '/'.
+
+Examples:
+
+  LA OLIVA (CARRETERA DEL COTILLO)
+  MAZARRÓN/LAS TORRES
+  SAN BARTOLOME TIRAJANA-LOMO PEDRO ALFONSO
+
+'''
+def clean_name(city):
+
+	real_name = city.replace('  ','-').replace('(','-').replace('/','-').rstrip().lower().split('-')
+
+	return unidecode.unidecode(real_name[0])
+
 def load_cities():
 	
 	cities_dict = {}
 	reader = csv.reader(open('util/cities.csv','r'),delimiter=';')
 	for row in reader:
-		cities_dict[row[0].lower()] = row[1]
+		cities_dict[clean_name(row[0])] = row[1]
 		
 	return cities_dict
 	
@@ -48,7 +63,7 @@ def get_province(city,code):
 	else:
 		# If it's AEMET station, try to find the most similar name in the dict
 		cit_dict = load_cities()
-		return int(cit_dict[min(cit_dict.keys(), key=lambda v: editdistance.eval(city.lower(),v))])
+		return int(cit_dict[min(cit_dict.keys(), key=lambda v: editdistance.eval(clean_name(city),v))])
 	
 
 	
