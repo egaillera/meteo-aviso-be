@@ -16,6 +16,7 @@ from get_mc_data import get_mc_data
 from get_aemet_data import get_aemet_data
 from constants import *
 from util.distance import *
+from notifier import *
 
 logger = logging.getLogger("collect_data")
 logger.setLevel(logging.DEBUG)
@@ -74,6 +75,7 @@ def insert_measurement(measurement):
 	         station = measurement[0][STATION_CODE_IDX])
 		db.session.add(new_measurement)
 		db.session.commit()
+		check_measurement(new_measurement)
 	except exc.IntegrityError:
 		logger.info('Trying to insert a duplicated measurement .. ignoring it')
 		db.session.rollback()
@@ -123,7 +125,9 @@ def main():
 	aemet_data = get_aemet_data()
 	find_new_stations(all_stations,aemet_data)
 	logger.info('Inserting AEMET measurements ..')
-	insert_all(aemet_data)
+	#insert_all(aemet_data)
+	for measurement in aemet_data:
+		insert_measurement(measurement)
 	logger.info('Finished inserting AEMET measurements')
 	
 	db.session.commit()
