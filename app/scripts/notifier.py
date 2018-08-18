@@ -1,5 +1,6 @@
 import logging
 from logging.handlers import RotatingFileHandler
+import operator
 
 logger = logging.getLogger("notifier_data")
 logger.setLevel(logging.DEBUG)
@@ -8,6 +9,8 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+# Dictionary to work with logical operators as strings
+ops = {">":operator.gt,"<":operator.lt}
 
 '''
 Check if there are notifications rules for an station. For the moment only 
@@ -24,16 +27,16 @@ Returns a dictionary with the information:
               "user_id":"egaillera@gmail.com",
               "conditions": [
                         {"dimension":"rainfall","quantifier":">","value":0},
-                        {"dimension":"curr_temp","quantifier":"<","value":0},
-                        {"dimension":"curr_temp","quantifier":">","value":32},
+                        {"dimension":"current_temp","quantifier":"<","value":0},
+                        {"dimension":"current_temp","quantifier":">","value":32},
                        ]
             },
             {
               "user_id":"eggisbert@gmail.com",
               "conditions": [
                         {"dimension":"rainfall","quantifier":">","value":5},
-                        {"dimension":"curr_temp","quantifier":"<","value":-5},
-                        {"dimension":"curr_temp","quantifier":">","value":35},
+                        {"dimension":"current_temp","quantifier":"<","value":-5},
+                        {"dimension":"current_temp","quantifier":">","value":35},
                        ]
             },
           ]
@@ -44,23 +47,23 @@ def get_notif_rules(station_code):
 	logger.debug("--> get_notif_rules() for station %s",station_code)
 	rules = None
 	
-	if station_code == '8059C':
-		rules = { "st_code":'8059C',
+	if station_code == '8057C':
+		rules = { "st_code":'8057C',
 	              "users": [
 	                {
 	                  "user_id":"egaillera@gmail.com",
 	                  "conditions": [
 	                            {"dimension":"rainfall","quantifier":">","value":0},
-	                            {"dimension":"curr_temp","quantifier":"<","value":0},
-	                            {"dimension":"curr_temp","quantifier":">","value":32},
+	                            {"dimension":"current_temp","quantifier":"<","value":0},
+	                            {"dimension":"current_temp","quantifier":">","value":1},
 	                           ]
 	                },
 	                {
 	                  "user_id":"eggisbert@gmail.com",
 	                  "conditions": [
 	                            {"dimension":"rainfall","quantifier":">","value":5},
-	                            {"dimension":"curr_temp","quantifier":"<","value":-5},
-	                            {"dimension":"curr_temp","quantifier":">","value":35},
+	                            {"dimension":"current_temp","quantifier":"<","value":-5},
+	                            {"dimension":"current_temp","quantifier":">","value":35},
 	                           ]
 	                },
 	              ]
@@ -80,4 +83,10 @@ def check_measurement(measurement):
 	if rules != None:
 		for user in rules['users']:
 			logger.debug("Conditions %s for user %s" % (user['conditions'],user['user_id']))
+			for condition in user['conditions']:
+				# Using ops dict to get the operator in the condition
+				# Using getattr to get the dimension value of measurement; equvialent to measurement.dimension
+				if ops[condition['quantifier']](getattr(measurement,condition['dimension']),condition['value']):
+					logger.debug("Match condition for %s --> sending notification to %s",
+					              condition['dimension'],user['user_id'])
 	
