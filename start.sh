@@ -7,7 +7,7 @@ if [ "$ENV" = 'COLLECTOR' ]; then
 	do 
 	   echo "Running Collection Daemon"
 	   python "/home/meteo/meteo-aviso-be/app/scripts/collect_data.py" 
-	   sleep 3600
+	   sleep 7200
 	done
 	
 else 
