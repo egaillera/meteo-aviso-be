@@ -1,3 +1,4 @@
+apns3==1.0.0
 appdirs==1.4.3
 click==6.7
 editdistance==0.4
