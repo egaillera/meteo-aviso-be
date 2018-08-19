@@ -3,7 +3,7 @@ from models import Station,Measurement
 from flask import jsonify,request
 import db_access.users
 import db_access.measurement
-
+import db_access.rules
 
 @app.route('/')
 def homepage():
@@ -42,5 +42,16 @@ def save_token():
 		return jsonify(token="token",status=200)
 	else:
 		return jsonify(token="token",status=500)
+		
+@app.route('/save_rules', methods=['POST'])
+def save_rules():
+	content = request.json
+	print(content)
+	if db_access.rules.check_rules(content):
+		db_access.rules.insert_rules(content['email'],content['station'],str(content['rules']))
+		return jsonify(rules="rules",status=200)
+	else:
+		return jsonify(rules="rules",status=406)
+	
 	
 	

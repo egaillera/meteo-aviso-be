@@ -97,7 +97,7 @@ class Config(db.Model):
 		return {
 			'rules'		: self.rules,
 			'station'	: self.station,
-			'device_id'	: self.device_id
+			'email'		: self.email
 		}
 	
 		
