@@ -22,10 +22,17 @@ def get_closest_measurement(lat,lon):
 	m = Measurement.query.filter(Measurement.date_created > recent).subquery('m')
 	active_stations = Station.query.filter(Station.code == m.c.station)
 	
+	# Transform to list before using it
+	# TODO Why is this needed?
+	as_list = []
+	for station in active_stations:
+		as_list.append(station)
+	
 	#active_stations = Station.query.all()
 	
 	# Get the closest one
-	closest_station = get_closest_station(active_stations,lat,lon)
+	#closest_station = get_closest_station(active_stations,lat,lon)
+	closest_station = get_closest_station(as_list,lat,lon)
 	
 	return get_last_measurement(closest_station.code)
 	
