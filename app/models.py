@@ -89,7 +89,7 @@ class Config(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	rules = db.Column(db.String(4096)) # Rules to apply in serialized JSON format
 	station = db.Column(db.String(25),db.ForeignKey('station.code'),nullable=False)
-	device_id = db.Column(db.String(100),db.ForeignKey('user.device_id'),nullable=False)
+	email = db.Column(db.String(255),db.ForeignKey('user.email'),nullable=False)
 	
 	@property
 	def serialize(self):
