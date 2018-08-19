@@ -35,6 +35,6 @@ def insert_user(user):
 		return True
 	except:
 		app.logger.error("Error inserting in database")
-		db.sessionn.rollback()
+		db.session.rollback()
 		return False
 		
