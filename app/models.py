@@ -34,7 +34,7 @@ class Measurement(db.Model):
 	__tablename__ = 'measurement'
 	
 	# Unique index to avoid potential duplication of measurements
-	#__table_args__ = (Index('date_station_idx','date_created','station',unique=True),) 
+	__table_args__ = (Index('date_station_idx','date_created','station',unique=True),) 
 	
 	id = db.Column(db.Integer, primary_key=True)
 	date_created = db.Column(db.DateTime)
