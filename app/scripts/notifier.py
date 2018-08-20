@@ -101,7 +101,7 @@ def get_notif_rules(station_code):
 	                  "conditions": [
 	                            {"dimension":"rainfall","quantifier":">","value":0},
 	                            {"dimension":"current_temp","quantifier":"<","value":0},
-	                            {"dimension":"current_temp","quantifier":">","value":29},
+	                            {"dimension":"current_temp","quantifier":">","value":26},
 	                           ]
 	                },
 	                {
@@ -109,7 +109,7 @@ def get_notif_rules(station_code):
 	                  "conditions": [
 	                            {"dimension":"rainfall","quantifier":">","value":5},
 	                            {"dimension":"current_temp","quantifier":"<","value":-5},
-	                            {"dimension":"current_temp","quantifier":">","value":29},
+	                            {"dimension":"current_temp","quantifier":">","value":26},
 	                           ]
 	                },
 	              ]
