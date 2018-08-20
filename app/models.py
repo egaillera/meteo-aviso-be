@@ -67,7 +67,7 @@ class User(db.Model):
 	__tablename__ = 'user'
 	
 	# Unique index to avoid potential duplication of measurements
-	__table_args__ = (Index('device_id_idx','device_id',unique=True),)
+	__table_args__ = (Index('email_idx','email',unique=True),)
 	
 	id = db.Column(db.Integer, primary_key=True)
 	email = db.Column(db.String(255), nullable=False)
