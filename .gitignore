@@ -58,3 +58,5 @@ docs/_build/
 
 *.db
 logs
+*.tmproj
+*.pem
