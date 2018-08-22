@@ -8,7 +8,7 @@ from apns3 import APNs, Frame, Payload
 
 logger = logging.getLogger("notifier_data")
 logger.setLevel(logging.INFO)
-handler = RotatingFileHandler('../app/logs/notifier_data.log',maxBytes=100000, backupCount=2)
+handler = RotatingFileHandler('../app/logs/notifier_data.log',maxBytes=1000000, backupCount=3)
 formatter = logging.Formatter('%(asctime)s - [%(filename)s:%(lineno)s - %(funcName)20s()] - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
