@@ -3,6 +3,7 @@ from logging.handlers import RotatingFileHandler
 import operator
 
 from models import *
+from sqlalchemy.orm.exc import NoResultFound
 from apns3 import APNs, Frame, Payload
 
 logger = logging.getLogger("notifier_data")
@@ -68,7 +69,7 @@ TODO: for the moment the behaviour is simulated, but the database should be cons
 Returns a dictionary with the information:
 
 { "st_code":'8059C',
-          "rules": [
+          "users": [
             {
               "user_id":"egaillera@gmail.com",
               "conditions": [
@@ -93,29 +94,47 @@ def get_notif_rules(station_code):
 	logger.debug("--> get_notif_rules() for station %s",station_code)
 	rules = None
 	
+	'''
 	if station_code == '8057C':
-		rules = { "st_code":'8057C',
-	              "users": [
-	                {
-	                  "user_id":"egaillera@gmail.com",
-	                  "conditions": [
+		rules = { "egaillera@gmail.com": [
 	                            {"dimension":"rainfall","quantifier":">","value":0},
 	                            {"dimension":"current_temp","quantifier":"<","value":0},
 	                            {"dimension":"current_temp","quantifier":">","value":26},
-	                           ]
-	                },
-	                {
-	                  "user_id":"eggisbert@gmail.com",
-	                  "conditions": [
+	                           ],
+	               "eggisbert@gmail.com": [
 	                            {"dimension":"rainfall","quantifier":">","value":5},
 	                            {"dimension":"current_temp","quantifier":"<","value":-5},
 	                            {"dimension":"current_temp","quantifier":">","value":26},
 	                           ]
-	                },
-	              ]
 	          }
+	'''
 	
-	logger.debug("Rules returned: %s",str(rules))
+	# Get rules for this station from the database
+	try:
+		dbrules = Config.query.filter(Config.station == station_code).all()	
+	except NoResultFound:
+		dbrules = None
+	except:
+		logger.error("Error querying database")
+		dbrules = None
+		
+	# Initialize the structures to compose dict/JSON, including users
+	rules = {}
+	condition = {}
+		
+	# There will be one row for condition and user	
+	if dbrules != None:
+		for dbrule in dbrules:
+			condition = {}
+			condition['dimension'] = dbrule.dimension
+			condition['quantifier'] = dbrule.quantifier
+			condition['value'] = dbrule.value
+			if dbrule.email not in rules.keys():
+				rules[dbrule.email] = []
+			rules[dbrule.email].append(condition)
+	
+	if rules == {}: rules = None		
+	logger.info("Rules returned: %s",str(rules))
 	return rules
 	
 
@@ -124,16 +143,19 @@ Check if a measurement should trigger a notification to an end user
 '''
 def check_measurement(measurement):
 	
-	logger.debug("---> station %s" % measurement.station)
+	logger.info("---> station %s" % measurement.station)
 	rules = get_notif_rules(measurement.station)
 	if rules != None:
-		for user in rules['users']:
-			logger.debug("Conditions %s for user %s" % (user['conditions'],user['user_id']))
-			for condition in user['conditions']:
+		for user in rules.keys():
+			logger.info("Conditions %s for user %s" % (rules[user],user))
+			for condition in rules[user]:
+				logger.info("Checking condition %s",condition)
 				# Using ops dict to get the operator in the condition
 				# Using getattr to get the dimension value of measurement; equvialent to measurement.dimension
 				if ops[condition['quantifier']](getattr(measurement,condition['dimension']),condition['value']):
 					logger.info("Match condition for %s --> sending notification to %s",
-					              condition['dimension'],user['user_id'])
-					send_notification(user['user_id'],measurement.station,condition)
+					              condition['dimension'],user)
+					send_notification(user,measurement.station,condition)
+	else:
+		logger.info('Not rules found!')
 	

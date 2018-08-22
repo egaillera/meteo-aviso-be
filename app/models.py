@@ -86,18 +86,31 @@ class User(db.Model):
 class Config(db.Model):
 	__tablename__ = 'config'
 	
+	# Unique index to have only one row by user, station and dimension 
+	# and quantifier to avoid same condition over two values
+	__table_args__ = (Index('rule_idx','station', 'email', 'dimension', 
+	                        'quantifier', unique=True),)
+	
 	id = db.Column(db.Integer, primary_key=True)
-	rules = db.Column(db.String(4096)) # Rules to apply in serialized JSON format
-	station = db.Column(db.String(25),db.ForeignKey('station.code'),nullable=False)
-	email = db.Column(db.String(255),db.ForeignKey('user.email'),nullable=False)
+	station = db.Column(db.String(25),db.ForeignKey('station.code'),
+	                    nullable=False)
+	email = db.Column(db.String(255),db.ForeignKey('user.email'),
+	                  nullable=False)
+	dimension = db.Column(db.String(25),nullable=False)
+	quantifier = db.Column(db.String(3),nullable=False)
+	value = db.Column(db.Integer,nullable=False)
+	notified = db.Column(db.Boolean,nullable=False)
+	
 	
 	@property
 	def serialize(self):
 		"""Return object data in a serializeable format"""
 		return {
-			'rules'		: self.rules,
 			'station'	: self.station,
-			'email'		: self.email
+			'email'		: self.email,
+			'dimension'	: self.dimension,
+			'quantifier': self.quantifier,
+			'value'		: int(self.value)
 		}
 	
 		
