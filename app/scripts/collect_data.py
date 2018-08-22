@@ -119,7 +119,9 @@ def main():
 		mc_data = get_mc_data()
 		find_new_stations(all_stations,mc_data)
 		logger.info('Inserting Meteoclimatic measurements ..')
-		insert_all(mc_data)
+		for measurement in mc_data:
+			insert_measurement(measurement)
+		#insert_all(mc_data)
 		logger.info('Finished inserting Meteoclimatic measurements')
 		
 	aemet_data = get_aemet_data()
