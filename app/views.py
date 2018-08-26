@@ -48,7 +48,7 @@ def save_rules():
 	content = request.json
 	print(content)
 	if db_access.rules.check_rules(content):
-		db_access.rules.insert_rules(content['email'],content['station'],str(content['rules']))
+		db_access.rules.insert_rules(content['email'],content['station'],content['rules'])
 		return jsonify(rules="rules",status=200)
 	else:
 		return jsonify(rules="rules",status=406)
