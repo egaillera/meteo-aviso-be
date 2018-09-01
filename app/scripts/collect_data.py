@@ -34,7 +34,7 @@ def find_new_stations(all_stations,measurements):
 	# Check if this station is already in the DB
 	for measurement in measurements:
 		if measurement[0][STATION_CODE_IDX] not in st_codes:
-			print("Not found '%s'" % measurement[0][STATION_CODE_IDX])
+			logger.info("Not found '%s'" % measurement[0][STATION_CODE_IDX])
 			create_station_from_measurement(measurement)
 			
 def create_station_from_measurement(measurement):

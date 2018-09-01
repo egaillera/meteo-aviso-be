@@ -7,7 +7,7 @@ from geopy.geocoders import Nominatim
 import csv
 import editdistance
 import unidecode
-from util.cities import *
+from util.ucities import *
 
 def get_closest_station(active_stations,lat,lon):
 	
