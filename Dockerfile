@@ -4,7 +4,11 @@ MAINTAINER E. Garcia "egaillera@gmail.com"
 
 RUN groupadd -r meteo && useradd -r -g meteo meteo
 
-# Install software
+# Install vim
+RUN apt-get -y update
+RUN apt-get -y install vim
+
+# Install project software
 COPY . /home/meteo/meteo-aviso-be
 WORKDIR /home/meteo/meteo-aviso-be
 RUN pip3 install --upgrade pip
