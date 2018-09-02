@@ -54,9 +54,11 @@ def send_notification(user_id,st_code,condition):
 	
 	apns = APNs(use_sandbox=True, cert_file='scripts/MeteoAvisoPushCert.pem')
 	payload = Payload(alert=notif_text, sound="default", badge=0)
-	apns.gateway_server.send_notification(token_hex, payload)
-	
-	logger.info("Notification sent!")
+	try:
+		apns.gateway_server.send_notification(token_hex, payload)
+		logger.info("Notification sent!")
+	except:
+		logger.error("Error sending notification!!")
 	
 
 '''
