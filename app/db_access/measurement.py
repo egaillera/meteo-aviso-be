@@ -2,8 +2,10 @@ from app import app
 from sqlalchemy.orm.exc import NoResultFound
 from models import *
 from util.distance import get_closest_station
+from util.dates import sp_date
 import datetime,pytz
 
+'''
 def sp_date(date_utc):
 	
 	my_date = datetime.datetime.strptime(date_utc,'%Y-%m-%d %H:%M:%S')
@@ -11,6 +13,7 @@ def sp_date(date_utc):
 	my_date_spain = my_date_spain = my_date_utc.astimezone(pytz.timezone('Europe/Madrid'))
 	
 	return my_date_spain.strftime('%Y-%m-%d %H:%M:%S')
+'''
 	
 # TODO: check errors in query
 def get_closest_measurement(lat,lon):

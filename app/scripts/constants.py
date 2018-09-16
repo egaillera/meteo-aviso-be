@@ -9,6 +9,7 @@ REGEX_UPDATE_TIME_DATA = u'Actualizado: ([\-0-9\w\s:]+) UTC</li>'
 METEOCLIMATIC_URL = 'http://meteoclimatic.com/feed/rss/ES' 
 
 MC_DATE_FORMAT = u'%d-%m-%Y %H:%M'
+AEMET_DATE_FORMAT = u'%Y-%m-%dT%H:%M:%S'
 
 # Fields in Meteoclimatic structure (used as well for AEMET)
 TOTAL_FIELDS = 18

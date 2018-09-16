@@ -1,9 +1,11 @@
 import requests
 import json
 import datetime
+from util.dates import *
 
 from decimal import *
 from constants import *
+from pprint import pprint
 
 
 # To supress InsecureRequestWarning
@@ -14,7 +16,43 @@ querystring = {"api_key": aemet_api_key}
 headers = {
     'cache-control': "no-cache"
     }
+
+'''
+Get all observations and returns the last one per station. Change
+the rainfall field to sum the precipitation along the day
+'''
+def process_aemet_data(obs):
+	
+	obs_processed = {}
+	
+	for ob in obs:
+		# If an observation for this station already exists but this observation is more recent, 
+		# substitute it and increase the rainfall field if it belongs to present day
+		# to calculate total rainfall for the current day
+		if ob['idema'] in obs_processed.keys() \
+		               and (as_date(ob['fint']) > as_date(obs_processed[ob['idema']]['fint'])):
+			if 'prec' in ob.keys():
+				daily_rainfall = obs_processed[ob['idema']]['prec']
+				if is_today(obs_processed[ob['idema']]['fint']):
+					daily_rainfall += ob['prec']
+			obs_processed[ob['idema']] = ob
+			obs_processed[ob['idema']]['prec'] = daily_rainfall
+		else:
+			obs_processed[ob['idema']] = ob
+			# Make sure the field 'prec' exists when creating the
+			# first entry for each station
+			if 'prec' not in ob.keys():
+				obs_processed[ob['idema']]['prec'] = 0.0
+	
+	# Return values as a list
+	obs_list = []
+	for o in obs_processed.values():
+		obs_list.append(o)
 		
+	return obs_list
+	
+	
+
 def get_aemet_data():
 		
 	measurement_list=[]
@@ -24,7 +62,8 @@ def get_aemet_data():
 	answer_url = json_response['datos']
 	
 	obs_json = json.loads(requests.request("GET", answer_url, headers=headers, verify=False).text)
-	for obs in obs_json:
+	o_list = process_aemet_data(obs_json)
+	for obs in o_list:
 		
 		# Initialize a measurement with TOTAL_FIELDS positions with -999 default value
 		measurement_data = ["-999"]*TOTAL_FIELDS
