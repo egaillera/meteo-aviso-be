@@ -17,12 +17,29 @@ logger.addHandler(handler)
 ops = {">":operator.gt,"<":operator.lt}
 
 # Dictionary compose text for user
-notif_texts_format = {"current_temp":{">":"La temperatura en %s ha superado los %s grados",
-                         "<":"La temperatura en %s está por debajo de los %s grados"},
-                      "rainfall":{">":"La precipitacion en %s ha superado los %s litros",
-				          "<":"La precipitacion en %s está por debajo de los %s litros"}}
+notif_texts_format = {"current_temp":{">":"La temperatura en %s ha superado los %s grados: %s",
+                         "<":"La temperatura en %s está por debajo de los %s grados: %s"},
+                      "rainfall":{">":"La precipitacion en %s ha superado los %s litros: %s",
+				          "<":"La precipitacion en %s está por debajo de los %s litros: %s"}}
          
          
+'''
+Change notified flag in the database to avoid notify more than once per day
+'''
+def mark_as_notified(user_id,st_code,condition):
+	
+	logger.info("Searching condition %s for station %s and user %s" % (condition,st_code,user_id))
+	rule = Config.query.filter((Config.station == st_code) & 
+	                           (Config.dimension == condition['dimension']) & 
+	                           (Config.email == user_id) & 
+	                           (Config.quantifier == condition['quantifier'])).one()
+	
+	logger.info("Marking condition %s for station %s and user %s as notified" % (condition,st_code,user_id))
+	
+	rule.notified = True
+	db.session.commit()
+	
+
 '''
 Send notifications according to the condition matched. A understandable 
 message for humans should be sent
@@ -35,7 +52,7 @@ message for humans should be sent
         The return value. True for success, False otherwise.
   
 '''
-def send_notification(user_id,st_code,condition):
+def send_notification(user_id,st_code,condition,curr_value):
 	
 	logger.info("User to notify: %s" % user_id)
 	
@@ -49,13 +66,14 @@ def send_notification(user_id,st_code,condition):
 	
 	# Compose the text
 	notif_text = notif_texts_format[condition['dimension']][condition['quantifier']] % \
-	             (station_name,condition['value'])
+	             (station_name,condition['value'],curr_value)
 	logger.info("Sending notification: %s" % notif_text)
 	
 	apns = APNs(use_sandbox=True, cert_file='scripts/MeteoAvisoPushCert.pem')
 	payload = Payload(alert=notif_text, sound="default", badge=0)
 	try:
 		apns.gateway_server.send_notification(token_hex, payload)
+		mark_as_notified(user_id,st_code,condition)
 		logger.info("Notification sent!")
 	except:
 		logger.error("Error sending notification!!")
@@ -128,12 +146,13 @@ def get_notif_rules(station_code):
 	if dbrules != None:
 		for dbrule in dbrules:
 			condition = {}
-			condition['dimension'] = dbrule.dimension
-			condition['quantifier'] = dbrule.quantifier
-			condition['value'] = dbrule.value
-			if dbrule.email not in rules.keys():
-				rules[dbrule.email] = []
-			rules[dbrule.email].append(condition)
+			if dbrule.notified == False:
+				condition['dimension'] = dbrule.dimension
+				condition['quantifier'] = dbrule.quantifier
+				condition['value'] = dbrule.value
+				if dbrule.email not in rules.keys():
+					rules[dbrule.email] = []
+				rules[dbrule.email].append(condition)
 	
 	if rules == {}: rules = None		
 	logger.info("Rules returned: %s",str(rules))
@@ -153,11 +172,11 @@ def check_measurement(measurement):
 			for condition in rules[user]:
 				logger.info("Checking condition %s",condition)
 				# Using ops dict to get the operator in the condition
-				# Using getattr to get the dimension value of measurement; equvialent to measurement.dimension
+				# Using getattr to get the dimension value of measurement; equivalent to measurement.dimension
 				if ops[condition['quantifier']](getattr(measurement,condition['dimension']),condition['value']):
 					logger.info("Match condition for %s --> sending notification to %s",
 					              condition['dimension'],user)
-					send_notification(user,measurement.station,condition)
+					send_notification(user,measurement.station,condition,getattr(measurement,condition['dimension']))
 	else:
 		logger.info('Not rules found!')
 	

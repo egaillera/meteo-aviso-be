@@ -20,7 +20,7 @@ from notifier import *
 
 logger = logging.getLogger("collect_data")
 logger.setLevel(logging.DEBUG)
-handler = RotatingFileHandler('../app/logs/collect_data.log',maxBytes=100000, backupCount=2)
+handler = RotatingFileHandler('../app/logs/collect_data.log',maxBytes=1000000, backupCount=2)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
@@ -108,8 +108,18 @@ def clean_old_data():
 	too_old = datetime.datetime.today() - datetime.timedelta(days=DAYS_TO_KEEP_MEASUREMENTS)
 	Measurement.query.filter(Measurement.date_created < too_old).delete()
 	db.session.commit()	
+	
+def clean_notify_flags():
+	
+	# Clean only between 00:00 and 00:20
+	if datetime.datetime.now().hour == 0 and datetime.datetime.now().minute < 20:
+		Config.query.update({Config.notified: True})
+		db.session.commit()
 
 def main():
+	
+	# Clean notification flags
+	clean_notify_flags()
 	
 	# Get all stations from DB 
 	all_stations = Station.query.all()
