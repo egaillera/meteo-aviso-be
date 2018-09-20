@@ -1,0 +1,24 @@
+FROM arm32v7/ubuntu:latest
+
+MAINTAINER E. Garcia "egaillera@gmail.com"
+
+# Install vim
+RUN apt-get -y update
+RUN apt-get -y install vim
+
+# Install python environment
+RUN apt-get install --yes python3
+RUN apt-get install --yes python3-pip
+RUN ln -s /usr/bin/python3 /usr/bin/python
+RUN ln -s /usr/bin/pip3 /usr/bin/pip
+RUN apt-get install --yes python3-scipy
+
+# Install Postgres development
+RUN apt-get install --yes libpq-dev
+
+# Install uWGSI
+RUN apt-get install --yes uwsgi
+RUN apt-get install --yes uwsgi-plugin-python3
+
+
+

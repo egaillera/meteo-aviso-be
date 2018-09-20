@@ -1,0 +1,10 @@
+FROM egaillera/rpi-python3:latest
+
+MAINTAINER E. Garcia "egaillera@gmail.com"
+
+RUN groupadd -r meteo && useradd -r -g meteo meteo
+
+# Install Meteoclimatic dependencies
+COPY ./requirements_rpi.txt /tmp/requirements.txt
+RUN /usr/bin/pip install -r /tmp/requirements.txt
+
