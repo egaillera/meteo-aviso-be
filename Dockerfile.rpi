@@ -14,4 +14,4 @@ RUN mkdir -p /home/meteo/meteo-aviso-be/app/logs
 # Start server
 RUN chmod +x start_rpi.sh
 WORKDIR /home/meteo/meteo-aviso-be/app
-CMD ["../start.sh"] 
+CMD ["../start_rpi.sh"] 
