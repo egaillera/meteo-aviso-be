@@ -83,52 +83,27 @@ def send_notification(user_id,st_code,condition,curr_value):
 Check if there are notifications rules for an station. For the moment only 
 "rainfall" and "curr_temp" are supported
 
-TODO: for the moment the behaviour is simulated, but the database should be consulted. 
-      Is it better to keep the table in memory?
+TODO: Is it better to keep the table in memory?
 
 Returns a dictionary with the information:
 
-{ "st_code":'8059C',
-          "users": [
-            {
-              "user_id":"egaillera@gmail.com",
-              "conditions": [
-                        {"dimension":"rainfall","quantifier":">","value":0},
-                        {"dimension":"current_temp","quantifier":"<","value":0},
-                        {"dimension":"current_temp","quantifier":">","value":32},
-                       ]
-            },
-            {
-              "user_id":"eggisbert@gmail.com",
-              "conditions": [
-                        {"dimension":"rainfall","quantifier":">","value":5},
-                        {"dimension":"current_temp","quantifier":"<","value":-5},
-                        {"dimension":"current_temp","quantifier":">","value":35},
-                       ]
-            },
-          ]
-      }
+{
+'eggisbert@gmail.com': 
+     [{'dimension': 'current_temp', 'value': -3, 'quantifier': '<'}, 
+      {'dimension': 'current_temp', 'value': 35, 'quantifier': '>'}, 
+      {'dimension': 'rainfall', 'value': 0, 'quantifier': '>'}], 
+ 'egaillera@gmail.com': 
+     [{'dimension': 'current_temp', 'value': -3, 'quantifier': '<'}, 
+      {'dimension': 'rainfall', 'value': 0, 'quantifier': '>'}]
+}
+
+
 '''
 def get_notif_rules(station_code):
 	
 	logger.debug("--> get_notif_rules() for station %s",station_code)
 	rules = None
-	
-	'''
-	if station_code == '8057C':
-		rules = { "egaillera@gmail.com": [
-	                            {"dimension":"rainfall","quantifier":">","value":0},
-	                            {"dimension":"current_temp","quantifier":"<","value":0},
-	                            {"dimension":"current_temp","quantifier":">","value":26},
-	                           ],
-	               "eggisbert@gmail.com": [
-	                            {"dimension":"rainfall","quantifier":">","value":5},
-	                            {"dimension":"current_temp","quantifier":"<","value":-5},
-	                            {"dimension":"current_temp","quantifier":">","value":26},
-	                           ]
-	          }
-	'''
-	
+		
 	# Get rules for this station from the database
 	try:
 		dbrules = Config.query.filter(Config.station == station_code).all()	
