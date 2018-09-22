@@ -17,10 +17,10 @@ logger.addHandler(handler)
 ops = {">":operator.gt,"<":operator.lt}
 
 # Dictionary compose text for user
-notif_texts_format = {"current_temp":{">":"La temperatura en %s ha superado los %s grados: %s",
-                         "<":"La temperatura en %s está por debajo de los %s grados: %s"},
-                      "rainfall":{">":"La precipitacion en %s ha superado los %s litros: %s",
-				          "<":"La precipitacion en %s está por debajo de los %s litros: %s"}}
+notif_texts_format = {"current_temp":{">":"La temperatura en %s ha superado los %s grados: %.1f",
+                         "<":"La temperatura en %s está por debajo de los %s grados: %.1f"},
+                      "rainfall":{">":"La precipitacion en %s ha superado los %s litros: %.1f",
+				          "<":"La precipitacion en %s está por debajo de los %s litros: %.1f"}}
          
          
 '''
@@ -66,7 +66,7 @@ def send_notification(user_id,st_code,condition,curr_value):
 	
 	# Compose the text
 	notif_text = notif_texts_format[condition['dimension']][condition['quantifier']] % \
-	             (station_name,condition['value'],curr_value)
+	             (station_name,condition['value'],float(curr_value))
 	logger.info("Sending notification: %s" % notif_text)
 	
 	apns = APNs(use_sandbox=True, cert_file='scripts/MeteoAvisoPushCert.pem')
