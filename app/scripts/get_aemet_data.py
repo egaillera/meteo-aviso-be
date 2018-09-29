@@ -4,7 +4,6 @@ import datetime
 from util.dates import *
 
 from decimal import *
-from constants import *
 from pprint import pprint
 
 
@@ -16,6 +15,56 @@ querystring = {"api_key": aemet_api_key}
 headers = {
     'cache-control': "no-cache"
     }
+
+'''
+Receives an sorted list of measurements by date, and returns the 
+same list with the accumulated rainfall for the current day
+'''
+def calculate_rainfall(obs_list):
+	
+	acc_rainfall = 0
+	
+	for ob in obs_list:
+		if 'prec' not in ob.keys():
+			ob['prec'] = 0.0
+			
+		if is_today(ob['fint']):
+			acc_rainfall += ob['prec']
+			ob['prec'] = acc_rainfall
+	
+	return obs_list
+
+'''
+Get all observations as a list, and a return a dictionary:
+
+- Keys: station codes
+- Values: list of dicts, sorted by date. Each element is a measurement.
+          Note that the station code is replicated in each measurement
+
+{'8025': [{'fint': '2018-09-23T06:00:00', 'idema': '8025' , ....},
+          {'fint': '2018-09-23T07:00:00', 'idema': '8025' , ....},
+          {'fint': '2018-09-24T13:00:00', 'idema': '8025' , ....}],
+ '8057C': [{'fint': '2018-08-23T07:00:00', 'idema': '8057C' , ....},
+           {'fint': '2018-09-23T05:00:00', 'idema': '8057C' , ....},
+           {'fint': '2018-09-23T08:00:00', 'idema': '8057C' , ....}]}
+	
+'''
+def order_aemet_data(obs):
+	
+	ordered_data = {}
+	
+	# Create a dict item per station to store all measurements
+	for ob in obs:
+		if ob['idema'] not in ordered_data.keys():
+			ordered_data[ob['idema']] = []
+		ordered_data[ob['idema']].append(ob)
+	
+	# Order by date the measurements per each station
+	for station in ordered_data.keys():
+		ordered_data[station].sort(key=lambda k: as_date(k['fint']).timestamp())
+		ordered_data[station] = calculate_rainfall(ordered_data[station])	
+					
+	return ordered_data
 
 '''
 Get all observations and returns the last one per station. Change
@@ -99,7 +148,7 @@ def get_aemet_data():
 def main():
 	
 	aemet_data = get_aemet_data()
-	print(aemet_data)
+	pprint(aemet_data)
 	
 
 if __name__ == '__main__':
