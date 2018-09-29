@@ -1,1 +1,0 @@
-0 * * * * cd /meteo-aviso-be/app; /usr/bin/python3 scripts/collect_data.py
