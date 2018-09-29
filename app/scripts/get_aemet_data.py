@@ -35,7 +35,8 @@ def calculate_rainfall(obs_list):
 	return obs_list
 
 '''
-Get all observations as a list, and a return a dictionary:
+Get all observations as a list, calculate accummulated rainall
+and a return a dictionary:
 
 - Keys: station codes
 - Values: list of dicts, sorted by date. Each element is a measurement.
@@ -72,36 +73,17 @@ the rainfall field to sum the precipitation along the day
 '''
 def process_aemet_data(obs):
 	
-	obs_processed = {}
-	
-	for ob in obs:
-		# If an observation for this station already exists but this observation is more recent, 
-		# substitute it and increase the rainfall field if it belongs to present day
-		# to calculate total rainfall for the current day
-		if ob['idema'] in obs_processed.keys() \
-		               and (as_date(ob['fint']) > as_date(obs_processed[ob['idema']]['fint'])):
-			if 'prec' in ob.keys():
-				daily_rainfall = obs_processed[ob['idema']]['prec']
-				if is_today(obs_processed[ob['idema']]['fint']):
-					daily_rainfall += ob['prec']
-			obs_processed[ob['idema']] = ob
-			obs_processed[ob['idema']]['prec'] = daily_rainfall
-		else:
-			obs_processed[ob['idema']] = ob
-			# Make sure the field 'prec' exists when creating the
-			# first entry for each station
-			if 'prec' not in ob.keys():
-				obs_processed[ob['idema']]['prec'] = 0.0
+	obs_processed = order_aemet_data(obs)
 	
 	# Return values as a list
 	obs_list = []
-	for o in obs_processed.values():
-		obs_list.append(o)
+	for station in obs_processed.keys():
+		for o in obs_processed[station]:
+			obs_list.append(o)
 		
 	return obs_list
 	
 	
-
 def get_aemet_data():
 		
 	measurement_list=[]
@@ -128,20 +110,7 @@ def get_aemet_data():
 		#  - measurement_data, with all the measurement values
 		#  - measurement_time: time of the measurement
 		measurement = (measurement_data,measurement_time)
-		
-		# Before adding the measurement, check if it's the last one. So we need to keep 
-		# track about the last measurement in each station
-		if obs['idema'] not in last_measurement_dict.keys():
-			last_measurement_dict[obs['idema']] = measurement
-		else:
-			if measurement_time > last_measurement_dict[obs['idema']][1]:
-				last_measurement_dict[obs['idema']] = measurement
-				
-	for ms in last_measurement_dict.keys():
-		measurement_list.append(last_measurement_dict[ms])
-		
-	#for ms in measurement_list:
-	#	print(ms)
+		measurement_list.append(measurement)	
 		
 	return measurement_list
 			
