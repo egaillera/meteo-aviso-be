@@ -1,0 +1,15 @@
+[Unit]
+Description=Meteoaviso Data Collector container
+Requires=docker-meteoaviso_db.service
+After=docker-meteoaviso_db.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run -e "ENV=COLLECTOR" -e "METEOCLIMATIC=True" --name meteo-aviso-collector --link meteo-aviso-postgres:postgres meteo-aviso-be
+ExecStartPost=/bin/sleep 2
+ExecStartPost=/usr/bin/docker cp /home/pi/MeteoAvisoPushCert.pem meteo-aviso-collector:/home/meteo/meteo-aviso-be/app/scripts/.
+ExecStop=/usr/bin/docker stop -t 2 meteo-aviso-collector
+ExecStopPost=/usr/bin/docker rm -f meteo-aviso-collector
+
+[Install]
+WantedBy=default.target

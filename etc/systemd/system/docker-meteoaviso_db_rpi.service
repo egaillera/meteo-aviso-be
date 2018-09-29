@@ -1,0 +1,13 @@
+[Unit]
+Description=Meteoaviso Postgres container
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run --rm --name meteo-aviso-postgres -e POSTGRES_USER=meteo -e POSTGRES_PASSWORD=<password> -e POSTGRES_DB=meteo --volumes-from pgdata tobi312/rpi-postgresql
+ExecStop=/usr/bin/docker stop -t 2 meteo-aviso-postgres
+ExecStopPost=/usr/bin/docker rm -f meteo-aviso-postgres
+
+[Install]
+WantedBy=default.target

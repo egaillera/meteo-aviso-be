@@ -1,0 +1,13 @@
+[Unit]
+Description=Meteoaviso BE container
+Requires=docker-meteoaviso_db.service
+After=docker-meteoaviso_db.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run -p 9090:9090 -p 9091:9091  -e "LIMIT=20000" --name meteo-aviso-be --link meteo-aviso-postgres:postgres meteo-aviso-be
+ExecStop=/usr/bin/docker stop -t 2 meteo-aviso-be
+ExecStopPost=/usr/bin/docker rm -f meteo-aviso-be
+
+[Install]
+WantedBy=default.target
