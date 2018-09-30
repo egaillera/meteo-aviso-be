@@ -41,18 +41,18 @@ class test_aemet_collect(unittest.TestCase):
 			
 	def test_order_data(self):
 		o_list = order_aemet_data(self.data_to_order)
-		self.assertEqual(o_list['8057C'][1]['fint'],'2018-09-23T07:00:00')
-		self.assertEqual(o_list['8025'][1]['fint'],'2018-09-23T07:00:00')
+		self.assertEqual(o_list['8057C'][-2]['fint'],'2018-09-23T07:00:00')
+		self.assertEqual(o_list['8025'][-2]['fint'],'2018-09-23T07:00:00')
 		
 	# 8205: 1.0 + 2.0 + 1.0 + 2.0 + 8.0 = 14
 	def test_rainfall(self):
 		o_dict = order_aemet_data(self.data)
-		self.assertEqual(o_dict['8025'][23]['prec'],14.0)
-		self.assertEqual(o_dict['8025'][22]['prec'],6.0)
+		self.assertEqual(o_dict['8025'][-1]['prec'],14.0)
+		self.assertEqual(o_dict['8025'][-2]['prec'],6.0)
 		
 	def test_rainfall_no_data(self):
 		o_dict = order_aemet_data(self.data_to_order)
-		self.assertEqual(o_dict['8025'][2]['prec'],0.1)
+		self.assertEqual(o_dict['8025'][-1]['prec'],0.1)
 		
 	def test_process_aemet_data(self):
 		o_list = process_aemet_data(self.data_to_order)

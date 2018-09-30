@@ -60,10 +60,11 @@ def order_aemet_data(obs):
 			ordered_data[ob['idema']] = []
 		ordered_data[ob['idema']].append(ob)
 	
-	# Order by date the measurements per each station
+	# Order by date the measurements per each station,
+	# calculate acc rainfal and return only 2 last measurements
 	for station in ordered_data.keys():
 		ordered_data[station].sort(key=lambda k: as_date(k['fint']).timestamp())
-		ordered_data[station] = calculate_rainfall(ordered_data[station])	
+		ordered_data[station] = calculate_rainfall(ordered_data[station])[-2:]	
 					
 	return ordered_data
 
