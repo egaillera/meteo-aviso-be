@@ -2,6 +2,7 @@ from app import app
 from sqlalchemy.orm.exc import NoResultFound
 from models import *
 import json
+from pprint import pprint
 
 
 '''
@@ -78,6 +79,48 @@ def insert_rules(email,station,rules):
 		app.logger.error("Error updating Config table in database")
 		db.session.rollback()
 		return False
+
+''' 
+Return set of rules for a user. Format shoud be a dict, where the key
+will be the station and the value the list of rules. Example follows:
+
+{
+   "8057C": [{"dimension":"rainfall","quantifier":">","value":0},
+             {"dimension":"current_temp","quantifier":"<","value":0},
+             {"dimension":"current_temp","quantifier":">","value":29}],
+   "8025": [{"dimension":"rainfall","quantifier":">","value":0},
+            {"dimension":"current_temp","quantifier":"<","value":0},
+            {"dimension":"current_temp","quantifier":">","value":29}],
+}
+
+'''
+def get_rules(email):
+	
+	app.logger.info("---> get_rules('%s')" % email)
+	rules = {}
+	
+	try:
+		db_rules = Config.query.filter(Config.email == email).all()
+		for r in db_rules:
+			if r.station not in rules.keys():
+				rules[r.station] = []
+			rules[r.station].append({"dimension":r.dimension,"quantifier":r.quantifier,"value":r.value})
+	except:
+		app.logger.error("Error querying database")
+		rules = None
+	
+	return rules
+		
+
+def main():
+
+	pprint(get_rules('egaillera@gmail.com'))
+	pprint(get_rules('eggisbert@gmail.com'))
+
+
+if __name__ == '__main__':
+	main()
+
 		
 			
 	

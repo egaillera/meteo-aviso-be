@@ -41,7 +41,7 @@ def save_token():
 	if db_access.users.insert_user(request.form.to_dict()):
 		return jsonify(token="token",status=200)
 	else:
-		return jsonify(token="token",status=500)
+		return jsonify(error="Database error",status=500),500
 		
 @app.route('/save_rules', methods=['POST'])
 def save_rules():
@@ -51,7 +51,21 @@ def save_rules():
 		db_access.rules.insert_rules(content['email'],content['station'],content['rules'])
 		return jsonify(rules="rules",status=200)
 	else:
-		return jsonify(rules="rules",status=406)
+		return jsonify(rules="rules",status=406),406
+		
+@app.route('/get_rules')
+def get_rules():
+	"""Return rules from a user from /get_rules?email=kk@kk.com"""
+	
+	email = request.args.get("email")
+	rules = db_access.rules.get_rules(email)
+	if rules == None:
+		return jsonify(error="Database access error",status=500),500
+	else:
+		return jsonify(rules)
+	
+		
+
 	
 	
 	
