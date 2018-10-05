@@ -11,7 +11,7 @@ from util.ucities import *
 
 def get_closest_station(active_stations,lat,lon):
 	
-	app.logger.debug("---> get_closest_station() to lat=%s, lon=%s" % (lat,lon))
+	app.logger.info("---> get_closest_station() to lat=%s, lon=%s" % (lat,lon))
 	
 	coord = []
 	
