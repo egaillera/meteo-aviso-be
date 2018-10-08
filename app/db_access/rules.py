@@ -81,17 +81,33 @@ def insert_rules(email,station,rules):
 		return False
 
 ''' 
-Return set of rules for a user. Format shoud be a dict, where the key
-will be the station and the value the list of rules. Example follows:
+Return set of rules for a user. Format shoud be a dict of dicts, where the key
+will be the station and the value another dict with the list of rules and
+the name of the station. Example follows:
 
-{
-   "8057C": [{"dimension":"rainfall","quantifier":">","value":0},
-             {"dimension":"current_temp","quantifier":"<","value":0},
-             {"dimension":"current_temp","quantifier":">","value":29}],
-   "8025": [{"dimension":"rainfall","quantifier":">","value":0},
-            {"dimension":"current_temp","quantifier":"<","value":0},
-            {"dimension":"current_temp","quantifier":">","value":29}],
-}
+{'2966D': {'rules': [{'dimension': 'rainfall', 'quantifier': '>', 'value': 0},
+                     {'dimension': 'current_temp',
+                      'quantifier': '<',
+                      'value': 0},
+                     {'dimension': 'current_temp',
+                      'quantifier': '>',
+                      'value': 29}],
+           'station_name': 'ALCAÑICES-VIVINERA'},
+ '8057C': {'rules': [{'dimension': 'current_temp',
+                      'quantifier': '>',
+                      'value': 20},
+                     {'dimension': 'current_temp',
+                      'quantifier': '<',
+                      'value': -3},
+                     {'dimension': 'rainfall', 'quantifier': '>', 'value': 0}],
+           'station_name': 'PEGO'},
+ 'ESCAT0800000008005A': {'rules': [{'dimension': 'current_temp',
+                                    'quantifier': '<',
+                                    'value': 15},
+                                   {'dimension': 'rainfall',
+                                    'quantifier': '>',
+                                    'value': 2}],
+                         'station_name': 'Barcelona - Poblenou'}}
 
 '''
 def get_rules(email):
@@ -103,8 +119,14 @@ def get_rules(email):
 		db_rules = Config.query.filter(Config.email == email).all()
 		for r in db_rules:
 			if r.station not in rules.keys():
-				rules[r.station] = []
-			rules[r.station].append({"dimension":r.dimension,"quantifier":r.quantifier,"value":r.value})
+				rules[r.station] = {}
+				rules[r.station]['rules'] = []
+				# Get name of the station
+				station = Station.query.filter(Station.code == r.station).one()
+				rules[r.station]['station_name'] = station.name
+			rules[r.station]['rules'].append({"dimension":r.dimension,
+			                                  "quantifier":r.quantifier,
+			                                  "value":r.value})
 	except:
 		app.logger.error("Error querying database")
 		rules = None
