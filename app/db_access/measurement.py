@@ -27,6 +27,7 @@ def get_closest_measurement(lat,lon):
 	
 	# Transform to list before using it
 	# TODO Why is this needed?
+	# TODO Why if there is no active station? Now we crash!!
 	as_list = []
 	for station in active_stations:
 		as_list.append(station)
