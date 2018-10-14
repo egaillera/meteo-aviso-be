@@ -132,7 +132,31 @@ def get_rules(email):
 		rules = None
 	
 	return rules
+
+''' 
+Return a list of notification rules for a station and a user. Format shoud be an
+array of dicts with the rules. Example follows:
+[
+{'dimension': 'current_temp','quantifier': '<','value': 15},
+{'dimension': 'rainfall','quantifier': '>','value': 2}
+]
+'''	
+def get_rules_for_station(email,station_code):
+	app.logger.info("---> get_rule('%s,%s')" % (email,station_code))
+	rules = []
+	
+	try:
+		db_rules = Config.query.filter((Config.email == email) &
+		                               (Config.station == station_code)).all()
+		for r in db_rules:
+			rules.append({"dimension":r.dimension,
+			              "quantifier":r.quantifier,
+			               "value":r.value})
+	except:
+		app.logger.error("Error querying database")
+		rules = None
 		
+	return rules
 
 def main():
 

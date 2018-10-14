@@ -64,7 +64,17 @@ def get_rules():
 	else:
 		return jsonify(rules)
 	
-		
+@app.route('/get_rules/<station_code>')
+def get_rules_from_station(station_code):
+	"""Return rules from /get_rules/<station_name>?email=kk@kk.com"""
+	
+	email = request.args.get("email")
+	rules = db_access.rules.get_rules_for_station(email,station_code)
+	if rules == None:
+		return jsonify(error="Database access error",status=500),500
+	else:
+		return jsonify(rules)
+
 
 	
 	
