@@ -22,6 +22,10 @@ def check_rules(config):
 	
 	app.logger.info("---> check_rules()")
 	
+	if config == None:
+		app.logger.error("Config is None")
+		return False
+	
 	if not (('email' in config) & ('station' in config) & ('rules' in config)):
 		app.logger.error("Missing email, station or rules in %s",config)
 		return False
