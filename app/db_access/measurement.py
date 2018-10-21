@@ -36,9 +36,13 @@ def get_closest_measurement(lat,lon):
 	
 	# Get the closest one
 	#closest_station = get_closest_station(active_stations,lat,lon)
-	closest_station = get_closest_station(as_list,lat,lon)
 	
-	return get_last_measurement(closest_station.code)
+	if as_list == []:
+		app.logger.error("No active station in the last 24 hours!!")
+		return None
+	else:
+		closest_station = get_closest_station(as_list,lat,lon)
+		return get_last_measurement(closest_station.code)
 	
 	
 
