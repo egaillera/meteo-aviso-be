@@ -65,6 +65,7 @@ def insert_rules(email,station,rules):
 			# Updating rule with new value
 			app.logger.info("Updating new value: %s" % rule['value'])
 			config_db.value = rule['value']
+			config_db.notified = False
 			db.session.commit()
 		
 		# No rules for this station and user: create it	
