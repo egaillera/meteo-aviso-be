@@ -163,6 +163,28 @@ def get_rules_for_station(email,station_code):
 		
 	return rules
 
+''' 
+Delete all rules about an station for a user
+'''	
+def delete_rules(email,station_code):
+	app.logger.info("---> delete_rules('%s,%s')" % (email,station_code))
+	
+	try:
+		Config.query.filter((Config.email == email) & (Config.station == station_code)).delete()
+	except:
+		app.logger.error("Error deleting rules")
+		return False
+		
+	# Commit changes
+	try:
+		db.session.commit()
+		return True
+	except:
+		app.logger.error("Error deleting rules  in database")
+		db.session.rollback()
+		return False
+	
+
 def main():
 
 	pprint(get_rules('egaillera@gmail.com'))

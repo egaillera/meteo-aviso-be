@@ -76,6 +76,15 @@ def get_rules_from_station(station_code):
 		return jsonify(rules)
 
 
+@app.route('/delete_rules/<station_code>',methods=['POST'])
+def delete_rules(station_code):
+	"""Return rules from /delete_rules/<station_name>?email=kk@kk.com"""
+
+	email = request.args.get("email")
+	if db_access.rules.delete_rules(email,station_code):
+		return jsonify(error="None",status=200),200
+	else:
+		return jsonify(error="Database access error",status=500),500
 	
 	
 	
