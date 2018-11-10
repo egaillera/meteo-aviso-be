@@ -1,9 +1,11 @@
 from app import app
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy import func
 from models import *
 from util.distance import get_closest_station
 from util.dates import sp_date
 import datetime,pytz
+from pprint import pprint
 
 '''
 def sp_date(date_utc):
@@ -70,5 +72,39 @@ def get_last_measurement(station_code):
 	
 	app.logger.debug(data)
 	return data
+	
+	
+def get_last_measurements():
+	
+	measurements_array = []
+	
+	# Get all stations with a Measurement in the last day
+	recent = datetime.datetime.today() - datetime.timedelta(days=1)
+	m = Measurement.query.filter(Measurement.date_created > recent).subquery('m')
+	active_stations = Station.query.filter(Station.code == m.c.station)
+	
+	for station in active_stations:
+		lm = get_last_measurement(station.code)
+		lm['lat'] = float(station.lat)
+		lm['lon'] = float(station.lon)
+		measurements_array.append(lm)
+		
+	return measurements_array
+	
+def prueba():
+	
+	join_query = db.session.query(Measurement,Station).join(Station)
+	
+	subquery = db.session.query(
+	    join_query,
+	    func.rank().over(
+	        order_by=join_query.c.date_created.desc(),
+	        partition_by=join_query.c.code
+	    ).label('rnk')
+	).subquery()
+	
+	for i in join_query:
+		print(i[0].station,i[0].date_created,i[1].name)
+	
 	
 	

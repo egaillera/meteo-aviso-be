@@ -35,6 +35,13 @@ def last_measurement(station_code):
 	result = db_access.measurement.get_last_measurement(station_code)
 	return jsonify(result) if result != None else "[]"
 	
+@app.route('/last_measurements')
+def last_measurements():
+	""" Return last measurements of all stations """
+
+	result = db_access.measurement.get_last_measurements()
+	return jsonify(result) if result != None else "[]"
+	
 @app.route('/token', methods=['POST'])
 def save_token():
 	"""Save the token to the user table in the database"""
