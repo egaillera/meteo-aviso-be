@@ -56,6 +56,7 @@ def get_last_measurement(station_code):
 		# Add station name and coordinates
 		st = Station.query.filter(Station.code == station_code).one()
 		data['name'] = st.name
+		data['code'] = st.code
 		data['lat'] = float(st.lat)
 		data['lon'] = float(st.lon)
 		
