@@ -7,15 +7,7 @@ from util.dates import sp_date,sp_date_str
 import datetime,pytz
 from pprint import pprint
 
-'''
-def sp_date(date_utc):
-	
-	my_date = datetime.datetime.strptime(date_utc,'%Y-%m-%d %H:%M:%S')
-	my_date_utc = my_date_utc = my_date.replace(tzinfo=pytz.timezone('UTC'))
-	my_date_spain = my_date_spain = my_date_utc.astimezone(pytz.timezone('Europe/Madrid'))
-	
-	return my_date_spain.strftime('%Y-%m-%d %H:%M:%S')
-'''
+
 	
 # TODO: check errors in query
 def get_closest_measurement(lat,lon):
@@ -61,11 +53,15 @@ def get_last_measurement(station_code):
 		if m != None:
 			data = m.serialize 
 		
-		# Add station name
-		data['name'] = Station.query.filter(Station.code == station_code).one().name
+		# Add station name and coordinates
+		st = Station.query.filter(Station.code == station_code).one()
+		data['name'] = st.name
+		data['lat'] = float(st.lat)
+		data['lon'] = float(st.lon)
 		
 		# Convert to Spanish time
 		data['date_created'] = sp_date(data['date_created'])
+		
 	
 	except NoResultFound:
 		data = None
