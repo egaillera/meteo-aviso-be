@@ -1,18 +1,20 @@
 from app import app
 from models import Station,Measurement
 from flask import jsonify,request
+import json
 import db_access.users
 import db_access.measurement
 import db_access.rules
 
 @app.route('/')
 def homepage():
-	app.logger.info('Home page visited')
-	return 'Home page' + '\n'
+	app.logger.info('Requested home page')
+	return 'MeteoAviso Home Page' + '\n'
 
 @app.route('/stations')	
 def stations():
 	"""Return all the stations"""
+	app.logger.info("Requested /stations")
 	return jsonify([i.serialize for i in Station.query.all()])
 	
 @app.route('/measurements/<station_code>')
@@ -38,9 +40,12 @@ def last_measurement(station_code):
 @app.route('/last_measurements')
 def last_measurements():
 	""" Return last measurements of all stations """
+	app.logger.info("Requested /last_measurements")
 
 	result = db_access.measurement.get_last_measurements()
+	app.logger.debug("Returned %d measurements" % len(result))
 	return jsonify(result) if result != None else "[]"
+	
 	
 @app.route('/token', methods=['POST'])
 def save_token():
