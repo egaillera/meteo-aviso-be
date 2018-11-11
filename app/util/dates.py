@@ -11,6 +11,10 @@ def sp_date(date_utc):
 	
 	return my_date_spain.strftime('%Y-%m-%d %H:%M:%S')
 	
+def sp_date_str(date_utc):
+	
+	return sp_date(date_utc.strftime(date_str_format['db']))
+	
 '''
 Returns True if the date received is in the same day that today
 '''
