@@ -19,7 +19,7 @@ else:
 	app.config.from_object(Configuration) 
 
 # Setting the logs
-handler = RotatingFileHandler('logs/meteo-aviso-be.log', maxBytes=10000, backupCount=1)
+handler = RotatingFileHandler('logs/meteo-aviso-be.log', maxBytes=1000000, backupCount=1)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 handler.setLevel(logging.DEBUG)
