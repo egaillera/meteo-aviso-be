@@ -112,6 +112,36 @@ class Config(db.Model):
 			'quantifier': self.quantifier,
 			'value'		: int(self.value)
 		}
+		
+class RulesConfig(db.Model):
+	__tablename__ = 'rulesconfig'
+
+	# Unique index to have only one row by user, station and dimension 
+	# and quantifier to avoid same condition over two values
+	__table_args__ = (Index('rulecfg_idx','station', 'device_id', 'dimension', 
+	                        'quantifier', unique=True),)
+
+	id = db.Column(db.Integer, primary_key=True)
+	station = db.Column(db.String(25),db.ForeignKey('station.code'),
+	                    nullable=False)
+	device_id = db.Column(db.String(100), nullable=False)
+	dimension = db.Column(db.String(25),nullable=False)
+	quantifier = db.Column(db.String(3),nullable=False)
+	value = db.Column(db.Integer,nullable=False)
+	notified = db.Column(db.Boolean,nullable=False)
+
+
+	@property
+	def serialize(self):
+		"""Return object data in a serializeable format"""
+		return {
+			'station'	: self.station,
+			'device_id'		: self.device_id,
+			'dimension'	: self.dimension,
+			'quantifier': self.quantifier,
+			'value'		: int(self.value)
+		}
+
 	
 		
 	
