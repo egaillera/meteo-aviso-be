@@ -5,6 +5,7 @@ import json
 import db_access.users
 import db_access.measurement
 import db_access.rules
+import db_access.new_rules
 
 @app.route('/')
 def homepage():
@@ -59,12 +60,13 @@ def save_token():
 def save_rules():
 	content = request.json
 	print(content)
-	if db_access.rules.check_rules(content):
-		db_access.rules.insert_rules(content['email'],content['station'],content['rules'])
+	if db_access.new_rules.check_rules1(content):
+		db_access.new_rules.insert_rules1(content['device_id'],content['station'],content['rules'])
 		return jsonify(rules="rules",status=200)
 	else:
 		return jsonify(rules="rules",status=406),406
-		
+
+# TODO: TO BE DEPRECATED		
 @app.route('/get_rules')
 def get_rules():
 	"""Return rules from a user from /get_rules?email=kk@kk.com"""
@@ -75,7 +77,20 @@ def get_rules():
 		return jsonify(error="Database access error",status=500),500
 	else:
 		return jsonify(rules)
-	
+# /TO BE DEPRECATED
+		
+@app.route('/get_rules1/<device_id>')
+def get_rules1(device_id):
+	"""Return rules from a user from /get_rules/<device_id>"""
+	app.logger.info("Requested /get_rules/%s" % device_id)
+
+	rules = db_access.new_rules.get_rules1(device_id)
+	if rules == None:
+		return jsonify(error="Database access error",status=500),500
+	else:
+		return jsonify(rules)
+
+# TODO: TO BE DEPRECATED	
 @app.route('/get_rules/<station_code>')
 def get_rules_from_station(station_code):
 	"""Return rules from /get_rules/<station_name>?email=kk@kk.com"""
@@ -86,8 +101,21 @@ def get_rules_from_station(station_code):
 		return jsonify(error="Database access error",status=500),500
 	else:
 		return jsonify(rules)
+# /TO BE DEPRECATED
+		
+@app.route('/get_rules1/<device_id>/<station_code>')
+def get_rules_from_station1(device_id,station_code):
+	"""Return rules from /get_rules/<device_id>/<station_name>"""
+	
+	app.logger.info("Requested /get_rules/%s/%s" % (device_id,station_code))
 
+	rules = db_access.new_rules.get_rules_for_station1(device_id,station_code)
+	if rules == None:
+		return jsonify(error="Database access error",status=500),500
+	else:
+		return jsonify(rules)
 
+# TODO: TO BE DEPRECATED
 @app.route('/delete_rules/<station_code>',methods=['POST'])
 def delete_rules(station_code):
 	"""Return rules from /delete_rules/<station_name>?email=kk@kk.com"""
@@ -97,6 +125,17 @@ def delete_rules(station_code):
 		return jsonify(error="None",status=200),200
 	else:
 		return jsonify(error="Database access error",status=500),500
+# /TO BE DEPRECATED
+
+@app.route('/delete_rules1/<device_id>/<station_code>',methods=['POST'])
+def delete_rules1(device_id,station_code):
+	"""Return rules from /delete_rules/<device_id>/<station_name>"""
+
+	if db_access.new_rules.delete_rules1(device_id,station_code):
+		return jsonify(error="None",status=200),200
+	else:
+		return jsonify(error="Database access error",status=500),500
+
 	
 	
 	

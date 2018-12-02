@@ -18,7 +18,7 @@ something like:
 - the fields email, station and rules are present
 - for each rule, fields dimension, quantifier and value are present:
 '''
-def check_rules(config):
+def check_rules1(config):
 	
 	app.logger.info("---> check_rules()")
 	
@@ -26,8 +26,8 @@ def check_rules(config):
 		app.logger.error("Config is None")
 		return False
 	
-	if not (('email' in config) & ('station' in config) & ('rules' in config)):
-		app.logger.error("Missing email, station or rules in %s",config)
+	if not (('device_id' in config) & ('station' in config) & ('rules' in config)):
+		app.logger.error("Missing device_id, station or rules in %s",config)
 		return False
 	else:
 		for rule in config['rules']:
@@ -37,45 +37,44 @@ def check_rules(config):
 			
 	return True
 
-
 '''
 Insert or update a set of rules to trigger notifications in the database. 
 Params:
-  - email: e-mail address of the user 
+  - device_id: identifier of the user mobile
   - station: code of the station to apply the rule
   - rules: a list with the rules as dicts. Example:
     '[{"dimension":"rainfall","quantifier":">","value":0},
       {"dimension":"current_temp","quantifier":"<","value":0},
       {"dimension":"current_temp","quantifier":">","value":29},]'
 '''
-def insert_rules(email,station,rules):
-	
+def insert_rules1(device_id,station,rules):
+
 	app.logger.info("---> insert_rules()")
-	
+
 	for rule in rules:
-		
+
 		# Check if there is already rules for this user, station, dimension and quantifier
 		try:
-			app.logger.info("Searching rules for user |%s|, station |%s|, dimension |%s|, quantifier |%s|" % 
-			                (email,station,rule['dimension'],rule['quantifier']))
-			config_db = Config.query.filter((Config.station == station) & 
-			                                (Config.dimension == rule['dimension']) & 
-			                                (Config.email == email) & 
-			                                (Config.quantifier == rule['quantifier'])).one()
+			app.logger.info("Searching rules for device_id |%s|, station |%s|, dimension |%s|, quantifier |%s|" % 
+			                (device_id,station,rule['dimension'],rule['quantifier']))
+			config_db = RulesConfig.query.filter((RulesConfig.station == station) & 
+			                                     (RulesConfig.dimension == rule['dimension']) & 
+			                                     (RulesConfig.device_id == device_id) & 
+			                                     (RulesConfig.quantifier == rule['quantifier'])).one()
 			# Updating rule with new value
 			app.logger.info("Updating new value: %s" % rule['value'])
 			config_db.value = rule['value']
 			config_db.notified = False
 			db.session.commit()
-		
+
 		# No rules for this station and user: create it	
 		except NoResultFound:
 			app.logger.info("Creating new rules entry")
-			new_config = Config(dimension = rule['dimension'], quantifier = rule['quantifier'], 
-			                    value = rule['value'],station = station, email = email,notified=False)
+			new_config = RulesConfig(dimension = rule['dimension'], quantifier = rule['quantifier'], 
+			                         value = rule['value'],station = station, device_id = device_id,notified=False)
 			db.session.add(new_config)
 			db.session.commit()
-			
+
 	# Commit changes
 	try:
 		db.session.commit()
@@ -115,13 +114,13 @@ the name of the station. Example follows:
                          'station_name': 'Barcelona - Poblenou'}}
 
 '''
-def get_rules(email):
-	
-	app.logger.info("---> get_rules('%s')" % email)
+def get_rules1(device_id):
+
+	app.logger.info("---> get_rules('%s')" % device_id)
 	rules = {}
-	
+
 	try:
-		db_rules = Config.query.filter(Config.email == email).all()
+		db_rules = RulesConfig.query.filter(RulesConfig.device_id == device_id).all()
 		for r in db_rules:
 			if r.station not in rules.keys():
 				rules[r.station] = {}
@@ -135,9 +134,9 @@ def get_rules(email):
 	except:
 		app.logger.error("Error querying database")
 		rules = None
-	
-	return rules
 
+	return rules
+	
 ''' 
 Return a list of notification rules for a station and a user. Format should be an
 array of dicts with the rules. Example follows:
@@ -146,13 +145,13 @@ array of dicts with the rules. Example follows:
 {'dimension': 'rainfall','quantifier': '>','value': 2}
 ]
 '''	
-def get_rules_for_station(email,station_code):
-	app.logger.info("---> get_rule('%s,%s')" % (email,station_code))
+def get_rules_for_station1(device_id,station_code):
+	app.logger.info("---> get_rule('%s,%s')" % (device_id,station_code))
 	rules = []
-	
+
 	try:
-		db_rules = Config.query.filter((Config.email == email) &
-		                               (Config.station == station_code)).all()
+		db_rules = RulesConfig.query.filter((RulesConfig.device_id == device_id) &
+		                               (RulesConfig.station == station_code)).all()
 		for r in db_rules:
 			rules.append({"dimension":r.dimension,
 			              "quantifier":r.quantifier,
@@ -160,38 +159,56 @@ def get_rules_for_station(email,station_code):
 	except:
 		app.logger.error("Error querying database")
 		rules = None
-		
-	return rules
 
+	return rules
+	
 ''' 
 Delete all rules about an station for a user
 '''	
-def delete_rules(email,station_code):
-	app.logger.info("---> delete_rules('%s,%s')" % (email,station_code))
-	
+def delete_rules1(device_id,station_code):
+	app.logger.info("---> delete_rules('%s,%s')" % (device_id,station_code))
+
 	try:
-		Config.query.filter((Config.email == email) & (Config.station == station_code)).delete()
+		RulesConfig.query.filter((RulesConfig.device_id == device_id) & (RulesConfig.station == station_code)).delete()
 	except:
 		app.logger.error("Error deleting rules")
 		return False
-		
+
 	# Commit changes
 	try:
 		db.session.commit()
 		return True
 	except:
-		app.logger.error("Error deleting rules  in database")
+		app.logger.error("Error deleting rules in database")
 		db.session.rollback()
 		return False
-	
+
 
 def main():
 
 	#pprint(get_rules('egaillera@gmail.com'))
 	#pprint(get_rules('eggisbert@gmail.com'))
 	
-	r = [{"dimension":"rainfall","quantifier":">","value":0}, {"dimension":"current_temp","quantifier":"<","value":0},{"dimension":"current_temp","quantifier":">","value":29},]
-	insert_rules1('sdhifskjfsdkjfhsdkhdsk','8025',r)
+	r1 = [{"dimension":"rainfall","quantifier":">","value":0}, {"dimension":"current_temp","quantifier":"<","value":0},{"dimension":"current_temp","quantifier":">","value":29},]
+	r2 = [{"dimension":"rainfall","quantifier":">","value":3}, {"dimension":"current_temp","quantifier":"<","value":2},{"dimension":"current_temp","quantifier":">","value":25},]
+	c1 = {"device_id":"aksfhksjhfkjdsfjsdk",
+	 "station":"1234",
+	 "rules": [{"dimension":"rainfall","quantifier":">","value":0},
+	      {"dimension":"current_temp","quantifier":"<","value":0},
+	      {"dimension":"current_temp","quantifier":">","value":29}]}
+	
+	#check_rules1(c)
+	insert_rules1('movil_de_quique','8025',r1)
+	insert_rules1('movil_de_quique','8057C',r2)
+	insert_rules1('movil_de_papa','8025',r1)
+	insert_rules1('movil_de_papa','8057C',r2)
+	
+	#pprint(get_rules1("sdhifskjfsdkjfhsdkhdsk"))
+	#pprint(get_rules1("jfdhfhdufsdfisdfdkfshsdkhdsf"))
+	
+	#pprint(get_rules_for_station1('movil_de_quique','8025'))
+	#pprint(get_rules_for_station1('movil_de_quique','8057C'))
+	
 	
 
 if __name__ == '__main__':
