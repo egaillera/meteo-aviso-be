@@ -6,8 +6,9 @@ from models import *
 from sqlalchemy.orm.exc import NoResultFound
 from apns3 import APNs, Frame, Payload
 
+
 logger = logging.getLogger("notifier_data")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 handler = RotatingFileHandler('../app/logs/notifier_data.log',maxBytes=1000000, backupCount=3)
 formatter = logging.Formatter('%(asctime)s - [%(filename)s:%(lineno)s - %(funcName)20s()] - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
@@ -29,12 +30,12 @@ Change notified flag in the database to avoid notify more than once per day
 def mark_as_notified(user_id,st_code,condition):
 	
 	logger.info("Searching condition %s for station %s and user %s" % (condition,st_code,user_id))
-	rule = Config.query.filter((Config.station == st_code) & 
-	                           (Config.dimension == condition['dimension']) & 
-	                           (Config.email == user_id) & 
-	                           (Config.quantifier == condition['quantifier'])).one()
+	rule = RulesConfig.query.filter((RulesConfig.station == st_code) & 
+	                           (RulesConfig.dimension == condition['dimension']) & 
+	                           (RulesConfig.device_id == user_id) & 
+	                           (RulesConfig.quantifier == condition['quantifier'])).one()
 	
-	logger.info("Marking condition %s for station %s and user %s as notified" % (condition,st_code,user_id))
+	logger.info("Marking condition %s for station %s and device_id %s as notified" % (condition,st_code,user_id))
 	
 	rule.notified = True
 	db.session.commit()
@@ -44,7 +45,7 @@ def mark_as_notified(user_id,st_code,condition):
 Send notifications according to the condition matched. A understandable 
 message for humans should be sent
     Args:
-        user_id: e-mail address of the user to be notified
+        user_id: device_id of the user to be notified
         st_code: station code
         condition: condition satisfied
 
@@ -61,7 +62,7 @@ def send_notification(user_id,st_code,condition,curr_value):
 	logger.info("Station to be notified about: %s" % station_name)
 	
 	# Get the notification token from the users table
-	token_hex = User.query.filter(User.email == user_id).one().notif_token
+	token_hex = User.query.filter(User.device_id == user_id).one().notif_token
 	logger.info("Notification token: %s" % token_hex)
 	
 	# Compose the text
@@ -88,11 +89,11 @@ TODO: Is it better to keep the table in memory?
 Returns a dictionary with the information:
 
 {
-'eggisbert@gmail.com': 
+'538BDF5F-EC8C-4F64-9DB7-55024C67E66D': 
      [{'dimension': 'current_temp', 'value': -3, 'quantifier': '<'}, 
       {'dimension': 'current_temp', 'value': 35, 'quantifier': '>'}, 
       {'dimension': 'rainfall', 'value': 0, 'quantifier': '>'}], 
- 'egaillera@gmail.com': 
+ '15D50E4B-4B97-4B19-84A6-FD1F567A0D7E': 
      [{'dimension': 'current_temp', 'value': -3, 'quantifier': '<'}, 
       {'dimension': 'rainfall', 'value': 0, 'quantifier': '>'}]
 }
@@ -106,7 +107,7 @@ def get_notif_rules(station_code):
 		
 	# Get rules for this station from the database
 	try:
-		dbrules = Config.query.filter(Config.station == station_code).all()	
+		dbrules = RulesConfig.query.filter(RulesConfig.station == station_code).all()	
 	except NoResultFound:
 		dbrules = None
 	except:
@@ -125,9 +126,9 @@ def get_notif_rules(station_code):
 				condition['dimension'] = dbrule.dimension
 				condition['quantifier'] = dbrule.quantifier
 				condition['value'] = dbrule.value
-				if dbrule.email not in rules.keys():
-					rules[dbrule.email] = []
-				rules[dbrule.email].append(condition)
+				if dbrule.device_id not in rules.keys():
+					rules[dbrule.device_id] = []
+				rules[dbrule.device_id].append(condition)
 	
 	if rules == {}: rules = None		
 	logger.info("Rules returned: %s",str(rules))
@@ -154,4 +155,6 @@ def check_measurement(measurement):
 					send_notification(user,measurement.station,condition,getattr(measurement,condition['dimension']))
 	else:
 		logger.info('Not rules found!')
+		
+
 	
