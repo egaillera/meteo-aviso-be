@@ -67,7 +67,7 @@ class User(db.Model):
 	__tablename__ = 'user'
 	
 	# Unique index to avoid potential duplication of measurements
-	__table_args__ = (Index('email_idx','email',unique=True),)
+	__table_args__ = (Index('device_id_idx','device_id',unique=True),)
 	
 	id = db.Column(db.Integer, primary_key=True)
 	email = db.Column(db.String(255), nullable=False)
@@ -83,35 +83,6 @@ class User(db.Model):
 			'Token'		: self.notif_token
 		}
 		
-class Config(db.Model):
-	__tablename__ = 'config'
-	
-	# Unique index to have only one row by user, station and dimension 
-	# and quantifier to avoid same condition over two values
-	__table_args__ = (Index('rule_idx','station', 'email', 'dimension', 
-	                        'quantifier', unique=True),)
-	
-	id = db.Column(db.Integer, primary_key=True)
-	station = db.Column(db.String(25),db.ForeignKey('station.code'),
-	                    nullable=False)
-	email = db.Column(db.String(255),db.ForeignKey('user.email'),
-	                  nullable=False)
-	dimension = db.Column(db.String(25),nullable=False)
-	quantifier = db.Column(db.String(3),nullable=False)
-	value = db.Column(db.Integer,nullable=False)
-	notified = db.Column(db.Boolean,nullable=False)
-	
-	
-	@property
-	def serialize(self):
-		"""Return object data in a serializeable format"""
-		return {
-			'station'	: self.station,
-			'email'		: self.email,
-			'dimension'	: self.dimension,
-			'quantifier': self.quantifier,
-			'value'		: int(self.value)
-		}
 		
 class RulesConfig(db.Model):
 	__tablename__ = 'rulesconfig'
