@@ -118,7 +118,8 @@ def main():
     mc_data = get_mc_data()
     #print_stations(mc_data)
 
-    logger.info('Inserting measurements ..')
+
+    '''logger.info('Inserting measurements ..')
     for measurement in mc_data:
         station = insert_measurement(measurement)
         #clean_station(station)
@@ -127,7 +128,7 @@ def main():
 
     # Remove old measurements
     logger.info("Removing data older than %s days" % DAYS_TO_KEEP_MEASUREMENTS)
-    clean_old_data()
+    clean_old_data()'''
 
 if __name__ == '__main__':
     main()

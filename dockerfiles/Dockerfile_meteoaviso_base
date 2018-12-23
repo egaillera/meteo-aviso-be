@@ -2,11 +2,18 @@ FROM python:3.5
 
 MAINTAINER E. Garcia "egaillera@gmail.com"
 
-RUN groupadd -r meteo && useradd -r -g meteo meteo
+#RUN groupadd -r meteo && useradd -r -g meteo meteo
 
 # Install vim
 RUN apt-get -y update
 RUN apt-get -y install vim
+RUN apt-get -y install nginx 
+RUN apt-get -y install sudo 
+
+# Create meteo user with sudo permissions and no password
+RUN adduser --disabled-password --gecos '' meteo
+RUN adduser meteo sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Install dependencies 
 COPY ./requirements.txt /tmp/requirements.txt
