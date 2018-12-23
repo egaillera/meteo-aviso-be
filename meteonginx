@@ -1,0 +1,9 @@
+server {
+    listen 9090;
+    server_name meteoaviso.cloudapp.net;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/home/meteo/meteo-aviso-be/app.sock;
+    } 
+}
