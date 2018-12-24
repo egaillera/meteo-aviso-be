@@ -1,6 +1,6 @@
 server {
     listen 9090;
-    server_name meteoaviso.cloudapp.net;
+    server_name meteoaviso.garciaillera.com;
 
     location / {
         include uwsgi_params;
