@@ -113,7 +113,7 @@ def clean_notify_flags():
 	
 	# Clean only between 00:00 and 00:20
 	if datetime.datetime.now().hour == 0 and datetime.datetime.now().minute < 20:
-		Config.query.update({Config.notified: False})
+		RulesConfig.query.update({Config.notified: False})
 		db.session.commit()
 
 def main():
