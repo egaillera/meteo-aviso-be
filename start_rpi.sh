@@ -12,5 +12,7 @@ if [ "$ENV" = 'COLLECTOR' ]; then
 	
 else 
 	echo "Running Application Server" 
-	exec uwsgi --plugin /usr/lib/uwsgi/plugins/http_plugin.so --plugin /usr/lib/uwsgi/plugins/python3_plugin.so --http 0.0.0.0:9090 --wsgi-file /home/meteo/meteo-aviso-be/app/main.py --callable app --stats 0.0.0.0:9091
+	sudo service nginx start
+	exec uwsgi --ini /home/meteo/meteo-aviso-be/wsgiconf_rpi.ini
+	#exec uwsgi --plugin /usr/lib/uwsgi/plugins/http_plugin.so --plugin /usr/lib/uwsgi/plugins/python3_plugin.so --http 0.0.0.0:9090 --wsgi-file /home/meteo/meteo-aviso-be/app/main.py --callable app --stats 0.0.0.0:9091
 fi
