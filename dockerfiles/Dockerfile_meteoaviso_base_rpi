@@ -2,7 +2,11 @@ FROM egaillera/rpi-python3:latest
 
 MAINTAINER E. Garcia "egaillera@gmail.com"
 
-RUN groupadd -r meteo && useradd -r -g meteo meteo
+#RUN groupadd -r meteo && useradd -r -g meteo meteo
+# Create meteo user with sudo permissions and no password
+RUN adduser --disabled-password --gecos '' meteo
+RUN adduser meteo sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Install Meteoclimatic dependencies
 COPY ./requirements_rpi.txt /tmp/requirements.txt
