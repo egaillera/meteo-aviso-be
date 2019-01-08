@@ -6,6 +6,15 @@ from util.dates import *
 from decimal import *
 from pprint import pprint
 
+import logging
+from logging.handlers import RotatingFileHandler
+
+logger = logging.getLogger("get_aemet_data")
+logger.setLevel(logging.DEBUG)
+handler = RotatingFileHandler('../app/logs/get_aemet_data.log',maxBytes=100000, backupCount=2)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 # To supress InsecureRequestWarning
 requests.packages.urllib3.disable_warnings()
@@ -90,10 +99,14 @@ def get_aemet_data():
 	measurement_list=[]
 	last_measurement_dict = {}
 	
+	logger.debug("Calling AEMET API to get URL")
 	json_response = json.loads(requests.request("GET", aemet_url, headers=headers, params=querystring,verify=False).text)
 	answer_url = json_response['datos']
+	logger.debug("Returned URL: " + answer_url)
 	
+	logger.debug("Calling AEMET API to get data")
 	obs_json = json.loads(requests.request("GET", answer_url, headers=headers, verify=False).text)
+	logger.debug("Returned data")
 	o_list = process_aemet_data(obs_json)
 	for obs in o_list:
 		
