@@ -1,0 +1,36 @@
+version: "3"
+services:
+  meteo-aviso-postgres:
+    container_name: meteo-aviso-postgres
+    restart: always
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=meteo
+      - POSTGRES_PASSWORD=mmm_dba1
+      - POSTGRES_DB=meteo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  meteo-aviso-be:
+    container_name: meteo-aviso-be
+    restart: always
+    image: meteo-aviso-be
+    ports:
+      - 9090:9090
+      - 9091:9091
+      - 80:80
+      - 443:443
+    depends_on:
+      - meteo-aviso-postgres
+  meteo-aviso-cl:
+    container_name: meteo-aviso-cl
+    environment:
+      - ENV=COLLECTOR
+      - METEOCLIMATIC=True
+    restart: always
+    image: meteo-aviso-be
+    depends_on:
+      - meteo-aviso-postgres
+volumes:
+  pgdata:
