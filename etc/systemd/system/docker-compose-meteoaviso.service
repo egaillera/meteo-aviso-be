@@ -1,15 +1,14 @@
 [Unit]
-Description=Docker Compose Application Service
+Description=Docker Compose Meteoaviso Service
 Requires=docker.service
 After=docker.service
 
 [Service]
-Restart=always
-Type=oneshot
+Type=simple
 RemainAfterExit=yes
 WorkingDirectory=/srv/docker
-ExecStart=/usr/local/bin/docker-compose -f /path_to_your_project/docker-compose.yml up -d
-ExecStop=/usr/local/bin/docker-compose down
+ExecStart=/usr/local/bin/docker-compose -f /home/pi/meteo-aviso-be/docker-compose-rpi.yaml up
+ExecStop=/usr/local/bin/docker-compose -f /home/pi/meteo-aviso-be/docker-compose-rpi.yaml down
 TimeoutStartSec=0
 
 [Install]
