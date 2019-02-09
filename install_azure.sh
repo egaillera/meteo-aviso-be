@@ -9,37 +9,31 @@ function valid () {
 }
 
 # Stop running containers
-echo "Stopping web server ..."
-sudo systemctl stop docker-meteoaviso_be
-valid $?
-echo "Stopping collector ..."
-sudo systemctl stop docker-meteoaviso_cl
-valid $?
+echo "Stopping containers ..."
+docker-compose down
 
 # Remove old image
 echo "Removing old meteo-aviso-be image ..."
 docker rmi meteo-aviso-be
-valid $?
+
+# Remove old software and download new one
+echo "Installing new software ..."
+rm -rf meteo-aviso-be.old
+mv meteo-aviso-be meteo-aviso-be.old
+git clone https://github.com/egaillera/meteo-aviso-be
 
 # Build new image
 echo "Building new image ..."
-docker build -t meteo-aviso-be:latest github.com/egaillera/meteo-aviso-be
+#docker build -t meteo-aviso-be:latest github.com/egaillera/meteo-aviso-be
+docker build -t meteo-aviso-be:latest -f meteo-aviso-be/Dockerfile meteo-aviso-be
 valid $?
 
 # Start containers
-echo "Starting web server ..."
-sudo systemctl start docker-meteoaviso_be
-valid $?
-echo "Starting collector ..."
-sudo systemctl start docker-meteoaviso_cl
+echo "Starting containers ..."
+docker-compose -f meteo-aviso-be/docker-compose.yaml up -d
 valid $?
 
 # Copy certificate to send notifications
 echo "Copying .pem file ..."
-docker cp MeteoAvisoPushCert.pem meteo-aviso-collector:/home/meteo/meteo-aviso-be/app/scripts/.
-valid $?
-
-# Remove unused containers
-echo "Deleting unused containers ..."
-docker rm $(docker ps -qa --no-trunc --filter "status=exited")
+docker cp MeteoAvisoPushCert.pem meteo-aviso-cl:/home/meteo/meteo-aviso-be/app/scripts/.
 valid $?
