@@ -9,11 +9,8 @@ function valid () {
 }
 
 # Stop running containers
-echo "Stopping web server ..."
-sudo systemctl stop docker-meteoaviso_be
-valid $?
-echo "Stopping collector ..."
-sudo systemctl stop docker-meteoaviso_cl
+echo "Stopping containers ..."
+sudo docker-compose -f meteo-aviso-be/docker-compose-rpi.yaml down
 valid $?
 
 # Remove old image
@@ -39,6 +36,6 @@ valid $?
 
 # Copy certificate to send notifications
 echo "Copying .pem file ..."
-sudo docker cp MeteoAvisoPushCert.pem meteo-aviso-collector:/home/meteo/meteo-aviso-be/app/scripts/.
+sudo docker cp MeteoAvisoPushCert.pem meteo-aviso-cl:/home/meteo/meteo-aviso-be/app/scripts/.
 valid $?
 
