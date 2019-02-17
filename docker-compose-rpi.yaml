@@ -1,5 +1,20 @@
-version: "3"
+version: "2"
 services:
+  meteo-aviso-nginx:
+    image: "tobi312/rpi-nginx:latest"
+    container_name: meteo-aviso-nginx
+    restart: always
+    ports:
+      - 9090:9090
+      - 80:80
+      - 443:443
+    volumes:
+      - ./etc/nginx/conf.d:/etc/nginx/conf.d
+      - app-volume:/home/meteo/meteo-aviso-be/
+    networks:
+      - wb_nw
+    depends_on:
+      - meteo-aviso-be
   meteo-aviso-postgres:
     container_name: meteo-aviso-postgres
     restart: always
@@ -11,18 +26,20 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - 5432:5432
+    networks:
+      - db_nw
   meteo-aviso-be:
     container_name: meteo-aviso-be
     restart: always
     image: meteo-aviso-be
-    ports:
-      - 9090:9090
-      - 9091:9091
-      - 80:80
-      - 443:443
     depends_on:
       - meteo-aviso-postgres
+    networks:
+      - db_nw
+      - wb_nw
+    volumes:
+      - app-volume:/home/meteo/meteo-aviso-be/
   meteo-aviso-cl:
     container_name: meteo-aviso-cl
     environment:
@@ -32,5 +49,13 @@ services:
     image: meteo-aviso-be
     depends_on:
       - meteo-aviso-postgres
+    networks:
+      - db_nw
 volumes:
   pgdata:
+  app-volume:
+networks:
+  db_nw:
+    driver: bridge
+  wb_nw:
+    driver: bridge

@@ -33,11 +33,8 @@ sudo docker build -t meteo-aviso-be:latest -f meteo-aviso-be/Dockerfile.rpi mete
 valid $?
 
 # Start containers
-echo "Starting web server ..."
-sudo systemctl start docker-meteoaviso_be
-valid $?
-echo "Starting collector ..."
-sudo systemctl start docker-meteoaviso_cl
+echo "Starting containers ..."
+docker-compose -f meteo-aviso-be/docker-compose-rpi.yaml up -d
 valid $?
 
 # Copy certificate to send notifications
