@@ -11,6 +11,7 @@ services:
     volumes:
       - ./etc/nginx/conf.d:/etc/nginx/conf.d
       - app-volume:/home/meteo/meteo-aviso-be/
+      - /etc/letsencrypt:/etc/letsencrypt
     networks:
       - wb_nw
     depends_on:
