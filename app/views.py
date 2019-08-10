@@ -41,8 +41,8 @@ def last_measurement(station_code):
 def last_measurements():
 	""" Return last measurements of all stations """
 	app.logger.info("Requested /last_measurements")
-
-	result = db_access.measurement.get_last_measurements()
+	
+	result = db_access.measurement.get_last_measurements(use_cache=True)
 	app.logger.debug("Returned %d measurements" % len(result))
 	return jsonify(result) if result != None else "[]"
 		

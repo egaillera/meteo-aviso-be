@@ -1,3 +1,6 @@
+import os
+import json
+
 from app import app
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
@@ -81,12 +84,19 @@ select * from (
    from measurement order by station) subquery 
 where rank = 1;
 '''	
-def get_last_measurements():
+def get_last_measurements(use_cache=True):
 	
 	app.logger.info("---> get_last_measurements()")
 	
 	measurements_array = []
-	
+
+	# Check if a cache file exists to avoid querying the database
+	# TODO: put cache file path in ONE place
+	if os.path.isfile("/shared_data/last_measurements.json") and use_cache:
+		with open("/shared_data/last_measurements.json") as measurements_file:
+			app.logger.debug("Returning cache data")
+			return json.load(measurements_file)
+		
 	app.logger.debug("Executing subquery")
 	# Subquery to get all measurements ranked by station based on date. Rank 1 is the most recent	
 	subquery = db.session.query(

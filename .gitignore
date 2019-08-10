@@ -60,3 +60,5 @@ docs/_build/
 logs
 *.tmproj
 *.pem
+rules/
+start_dev.sh

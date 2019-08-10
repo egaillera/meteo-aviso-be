@@ -1,6 +1,7 @@
 import os,sys
 import requests
 import re
+import json
 from datetime import *
 from decimal import *
 import logging
@@ -17,6 +18,7 @@ from get_aemet_data import get_aemet_data
 from constants import *
 from util.distance import *
 from notifier import *
+import db_access.measurement
 
 logger = logging.getLogger("collect_data")
 logger.setLevel(logging.DEBUG)
@@ -116,6 +118,14 @@ def clean_notify_flags():
 		RulesConfig.query.update({RulesConfig.notified: False})
 		db.session.commit()
 
+def save_measurements():
+
+	logger.info("Saving last measurements to cache file")
+	data_to_save = db_access.measurement.get_last_measurements(use_cache=False)
+	# TODO: put cache file path in ONE place
+	with open('/shared_data/last_measurements.json', 'w') as outfile:
+		json.dump(data_to_save, outfile, sort_keys=True, indent=4)
+
 def main():
 	
 	# Clean notification flags
@@ -143,6 +153,9 @@ def main():
 	logger.info('Finished inserting AEMET measurements')
 	
 	db.session.commit()
+
+	# Save recent measurements to cache file
+	save_measurements()
 	
 	# Remove old measurements
 	logger.info("Removing data older than %s days" % DAYS_TO_KEEP_MEASUREMENTS)

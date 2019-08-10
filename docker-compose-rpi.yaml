@@ -10,7 +10,7 @@ services:
       - 443:443
     volumes:
       - ./etc/nginx/conf.d:/etc/nginx/conf.d
-      - app-volume:/home/meteo/meteo-aviso-be/
+      - shared-volume:/shared_data
       - /etc/letsencrypt:/etc/letsencrypt
     networks:
       - wb_nw
@@ -40,7 +40,7 @@ services:
       - db_nw
       - wb_nw
     volumes:
-      - app-volume:/home/meteo/meteo-aviso-be/
+      - shared-volume:/shared_data
   meteo-aviso-cl:
     container_name: meteo-aviso-cl
     environment:
@@ -52,9 +52,11 @@ services:
       - meteo-aviso-postgres
     networks:
       - db_nw
+    volumes:
+      - shared-volume:/shared_data
 volumes:
   pgdata:
-  app-volume:
+  shared-volume:
 networks:
   db_nw:
     driver: bridge
