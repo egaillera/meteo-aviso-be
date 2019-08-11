@@ -10,11 +10,13 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 logger = logging.getLogger("get_aemet_data")
+'''
 logger.setLevel(logging.DEBUG)
 handler = RotatingFileHandler('../app/logs/get_aemet_data.log',maxBytes=100000, backupCount=2)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+'''
 
 # To supress InsecureRequestWarning
 requests.packages.urllib3.disable_warnings()
