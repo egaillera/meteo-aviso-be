@@ -99,6 +99,8 @@ class RulesConfig(db.Model):
 	dimension = db.Column(db.String(25),nullable=False)
 	quantifier = db.Column(db.String(3),nullable=False)
 	value = db.Column(db.Integer,nullable=False)
+	offset = db.Column(db.Integer,nullable=False)
+	current_value = db.Column(db.Integer,nullable=True)
 	notified = db.Column(db.Boolean,nullable=False)
 
 
@@ -110,7 +112,9 @@ class RulesConfig(db.Model):
 			'device_id'		: self.device_id,
 			'dimension'	: self.dimension,
 			'quantifier': self.quantifier,
-			'value'		: int(self.value)
+			'value'		: int(self.value),
+			'offset'	: int(self.offset),
+			'current_value'	: int(self.current_value)
 		}
 
 	

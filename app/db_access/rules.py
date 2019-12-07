@@ -9,14 +9,14 @@ from pprint import pprint
 Validate the format of the config JSON. The format should be
 something like:
 
-{"email":"egaillera@gmail.com",
+{"device_id":"74798292sdfhsdjfhdsjf9qwe477",
  "station":"1234",
- "rules": [{"dimension":"rainfall","quantifier":">","value":0},
-      {"dimension":"current_temp","quantifier":"<","value":0},
-      {"dimension":"current_temp","quantifier":">","value":29}]}
+ "rules": [{"dimension":"rainfall","quantifier":">","value":0,"offset":0},
+      {"dimension":"current_temp","quantifier":"<","value":0,"offset":1},
+      {"dimension":"current_temp","quantifier":">","value":29,"offset":0}]}
 
-- the fields email, station and rules are present
-- for each rule, fields dimension, quantifier and value are present:
+- the fields device_id, station and rules are present
+- for each rule, fields dimension, quantifier, value and offset are present:
 '''
 def check_rules(config):
 	
@@ -31,8 +31,8 @@ def check_rules(config):
 		return False
 	else:
 		for rule in config['rules']:
-			if not (('dimension' in rule) & ('quantifier' in rule) & ('value' in rule)):
-				app.logger.error("Missing dimension, quantifier or value in rule %s",rule)
+			if not (('dimension' in rule) & ('quantifier' in rule) & ('value' in rule) & ('offset' in rule)):
+				app.logger.error("Missing dimension, quantifie, value or offset in rule %s",rule)
 				return False
 			
 	return True
@@ -43,9 +43,9 @@ Params:
   - device_id: identifier of the user mobile
   - station: code of the station to apply the rule
   - rules: a list with the rules as dicts. Example:
-    '[{"dimension":"rainfall","quantifier":">","value":0},
-      {"dimension":"current_temp","quantifier":"<","value":0},
-      {"dimension":"current_temp","quantifier":">","value":29},]'
+    '[{"dimension":"rainfall","quantifier":">","value":0,"offset":0},
+      {"dimension":"current_temp","quantifier":"<","value":0,"offset":1},
+      {"dimension":"current_temp","quantifier":">","value":29,"offset":0},]'
 '''
 def insert_rules(device_id,station,rules):
 
@@ -61,9 +61,11 @@ def insert_rules(device_id,station,rules):
 			                                     (RulesConfig.dimension == rule['dimension']) & 
 			                                     (RulesConfig.device_id == device_id) & 
 			                                     (RulesConfig.quantifier == rule['quantifier'])).one()
-			# Updating rule with new value
+			# Updating rule with new values
 			app.logger.info("Updating new value: %s" % rule['value'])
+			app.logger.info("Updating new offset: %s" % rule['offset'])
 			config_db.value = rule['value']
+			config_db.offset = rule['offset']
 			config_db.notified = False
 			db.session.commit()
 
@@ -71,7 +73,8 @@ def insert_rules(device_id,station,rules):
 		except NoResultFound:
 			app.logger.info("Creating new rules entry")
 			new_config = RulesConfig(dimension = rule['dimension'], quantifier = rule['quantifier'], 
-			                         value = rule['value'],station = station, device_id = device_id,notified=False)
+			                         value = rule['value'], offset = rule['offset'], station = station, 
+									 device_id = device_id,notified = False)
 			db.session.add(new_config)
 			db.session.commit()
 
@@ -92,25 +95,31 @@ the name of the station. Example follows:
 {'2966D': {'rules': [{'dimension': 'rainfall', 'quantifier': '>', 'value': 0},
                      {'dimension': 'current_temp',
                       'quantifier': '<',
-                      'value': 0},
+                      'value': 0,
+					  'offset':0},
                      {'dimension': 'current_temp',
                       'quantifier': '>',
-                      'value': 29}],
+                      'value': 29,
+					  'offset':1}],
            'station_name': 'ALCAÑICES-VIVINERA'},
  '8057C': {'rules': [{'dimension': 'current_temp',
                       'quantifier': '>',
-                      'value': 20},
+                      'value': 20,
+					  'offset':0},
                      {'dimension': 'current_temp',
                       'quantifier': '<',
-                      'value': -3},
-                     {'dimension': 'rainfall', 'quantifier': '>', 'value': 0}],
+                      'value': -3,
+					  'offset':1},
+                     {'dimension': 'rainfall', 'quantifier': '>', 'value': 0, 'offset':2}],
            'station_name': 'PEGO'},
  'ESCAT0800000008005A': {'rules': [{'dimension': 'current_temp',
                                     'quantifier': '<',
-                                    'value': 15},
+                                    'value': 15,
+									'offset': 1},
                                    {'dimension': 'rainfall',
                                     'quantifier': '>',
-                                    'value': 2}],
+                                    'value': 2,
+									'offset': 0}],
                          'station_name': 'Barcelona - Poblenou'}}
 
 '''
@@ -130,7 +139,8 @@ def get_rules(device_id):
 				rules[r.station]['station_name'] = station.name
 			rules[r.station]['rules'].append({"dimension":r.dimension,
 			                                  "quantifier":r.quantifier,
-			                                  "value":r.value})
+			                                  "value":r.value,
+											  "offset":r.offset})
 	except:
 		app.logger.error("Error querying database")
 		rules = None
@@ -141,8 +151,8 @@ def get_rules(device_id):
 Return a list of notification rules for a station and a user. Format should be an
 array of dicts with the rules. Example follows:
 [
-{'dimension': 'current_temp','quantifier': '<','value': 15},
-{'dimension': 'rainfall','quantifier': '>','value': 2}
+{'dimension': 'current_temp','quantifier': '<','value': 15, 'offset': 10},
+{'dimension': 'rainfall','quantifier': '>','value': 2, 'offset': 0}
 ]
 '''	
 def get_rules_for_station(device_id,station_code):
@@ -155,7 +165,8 @@ def get_rules_for_station(device_id,station_code):
 		for r in db_rules:
 			rules.append({"dimension":r.dimension,
 			              "quantifier":r.quantifier,
-			               "value":r.value})
+			               "value":r.value,
+						   "offset":r.offset})
 	except:
 		app.logger.error("Error querying database")
 		rules = None
@@ -183,35 +194,6 @@ def delete_rules(device_id,station_code):
 		db.session.rollback()
 		return False
 
-
-def main():
-
-	#pprint(get_rules('egaillera@gmail.com'))
-	#pprint(get_rules('eggisbert@gmail.com'))
-	
-	r1 = [{"dimension":"rainfall","quantifier":">","value":0}, {"dimension":"current_temp","quantifier":"<","value":0},{"dimension":"current_temp","quantifier":">","value":29},]
-	r2 = [{"dimension":"rainfall","quantifier":">","value":3}, {"dimension":"current_temp","quantifier":"<","value":2},{"dimension":"current_temp","quantifier":">","value":25},]
-	c1 = {"device_id":"aksfhksjhfkjdsfjsdk",
-	 "station":"1234",
-	 "rules": [{"dimension":"rainfall","quantifier":">","value":0},
-	      {"dimension":"current_temp","quantifier":"<","value":0},
-	      {"dimension":"current_temp","quantifier":">","value":29}]}
-	
-	#check_rules(c)
-	insert_rules('movil_de_quique','8025',r1)
-	insert_rules('movil_de_quique','8057C',r2)
-	insert_rules('movil_de_papa','8025',r1)
-	insert_rules('movil_de_papa','8057C',r2)
-
-	
-	#pprint(get_rules("sdhifskjfsdkjfhsdkhdsk"))
-	#pprint(get_rules("jfdhfhdufsdfisdfdkfshsdkhdsf"))
-	
-	#pprint(get_rules_for_station('movil_de_quique','8025'))
-	#pprint(get_rules_for_station('movil_de_quique','8057C'))
-	
-if __name__ == '__main__':
-	main()
 
 		
 			
