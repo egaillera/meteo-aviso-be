@@ -56,6 +56,7 @@ message for humans should be sent
 def send_notification(user_id,st_code,condition,curr_value):
 	
 	logger.info("User to notify: %s" % user_id)
+	notif_flag = False
 	
 	# Get the real name of the station
 	station_name = Station.query.filter(Station.code == st_code).one().name
@@ -76,8 +77,11 @@ def send_notification(user_id,st_code,condition,curr_value):
 		apns.gateway_server.send_notification(token_hex, payload)
 		mark_as_notified(user_id,st_code,condition)
 		logger.info("Notification sent!")
+		notif_flag = True
 	except:
 		logger.error("Error sending notification!!")
+
+	return notif_flag
 	
 
 '''
@@ -141,6 +145,9 @@ Check if a measurement should trigger a notification to an end user
 def check_measurement(measurement):
 	
 	logger.info("---> station %s" % measurement.station)
+
+	ntf_flag = False
+
 	rules = get_notif_rules(measurement.station)
 	if rules != None:
 		for user in rules.keys():
@@ -152,9 +159,11 @@ def check_measurement(measurement):
 				if ops[condition['quantifier']](getattr(measurement,condition['dimension']),condition['value']):
 					logger.info("Match condition for %s --> sending notification to %s",
 					              condition['dimension'],user)
-					send_notification(user,measurement.station,condition,getattr(measurement,condition['dimension']))
+					ntf_flag = send_notification(user,measurement.station,condition,getattr(measurement,condition['dimension']))
 	else:
 		logger.info('Not rules found!')
+
+	return ntf_flag
 		
 
 	
