@@ -102,12 +102,22 @@ def get_aemet_data():
 	last_measurement_dict = {}
 	
 	logger.debug("Calling AEMET API to get URL")
-	json_response = json.loads(requests.request("GET", aemet_url, headers=headers, params=querystring,verify=False).text)
+	try:
+		json_response = json.loads(requests.request("GET", aemet_url, headers=headers, params=querystring,verify=False).text)
+	except:
+		logger.error("Error calling AEMET API-1")
+		return measurement_list
 	answer_url = json_response['datos']
 	logger.debug("Returned URL: " + answer_url)
 	
 	logger.debug("Calling AEMET API to get data")
-	obs_json = json.loads(requests.request("GET", answer_url, headers=headers, verify=False).text)
+	try:
+		obs_json = json.loads(requests.request("GET", answer_url, headers=headers, verify=False).text)
+	except:
+		logger.error("Error calling AEMET API-2")
+		return measurement_list
+		
+
 	logger.debug("Returned data")
 	o_list = process_aemet_data(obs_json)
 	for obs in o_list:
