@@ -151,7 +151,8 @@ def get_last_measurement_by_city(city):
 	
 	ms_list = get_last_measurements()
 	
-	pattern = '^' + city.lower() + '[ /-]'
+	pattern = '^' + city.lower() + '[ /-]|^' + city.lower() + '$'
+	app.logger.info("Appliying pattern %s over %s" %(pattern,city.lower()))
 	
 	for ms in ms_list:
 		if re.match(pattern,ms['name'].lower()):
