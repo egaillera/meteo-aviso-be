@@ -1,4 +1,5 @@
 import requests
+import urllib3
 import json
 import datetime
 from util.dates import *
@@ -18,8 +19,9 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 '''
 
-# To supress InsecureRequestWarning
+# To supress InsecureRequestWarning and to avoid errors due to poor server cipher (dh key too small)
 requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = 'ALL:@SECLEVEL=1'
 
 querystring = {"api_key": aemet_api_key}
 
