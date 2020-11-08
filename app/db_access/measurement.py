@@ -1,5 +1,6 @@
 import os
 import json
+import re
 
 from app import app
 from sqlalchemy.orm.exc import NoResultFound
@@ -140,5 +141,22 @@ def get_last_measurements(use_cache=True):
 	return measurements_array
 	
 	
+'''
+Returns the last measurement for a city. Look for this city 
+in all the stations, and return the first measurement found.
+'''	
+def get_last_measurement_by_city(city):
 	
+	app.logger.info("---> get_last_measurement_by_city(%s)" % city)
+	
+	ms_list = get_last_measurements()
+	
+	pattern = '^' + city.lower() + '[ /-]'
+	
+	for ms in ms_list:
+		if re.match(pattern,ms['name'].lower()):
+			return ms
+			
+	return None
+
 	

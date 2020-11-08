@@ -36,6 +36,13 @@ def last_measurement(station_code):
 	
 	result = db_access.measurement.get_last_measurement(station_code)
 	return jsonify(result) if result != None else "[]"
+
+@app.route('/last_measurement_by_city/<city>')
+def last_measurement_by_city(city):
+	""" Return last measurement of a specific city  """
+	
+	result = db_access.measurement.get_last_measurement_by_city(city)
+	return jsonify(result) if result != None else "[]"
 	
 @app.route('/last_measurements')
 def last_measurements():
