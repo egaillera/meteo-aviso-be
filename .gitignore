@@ -60,5 +60,6 @@ docs/_build/
 logs
 *.tmproj
 *.pem
+*.p8
 rules/
 start_dev.sh
