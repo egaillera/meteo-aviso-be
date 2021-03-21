@@ -44,3 +44,9 @@ FIELDS_TO_FILL = {'idema': STATION_CODE_IDX,'ta': CURRENT_TEMP_IDX,'lat': LAT_ID
 aemet_url = "https://opendata.aemet.es/opendata/api/observacion/convencional/todas"
 aemet_api_key = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZ2FpbGxlcmFAZ21haWwuY29tIiwianRpIjoiYmVhOTI4ZmEtMmM5Yy00ZDU4LWEzYjYtYWI1NDgzYWFiODRmIiwiaXNzIjoiQUVNRVQiLCJpYXQiOjE1MTI3NTAzNDMsInVzZXJJZCI6ImJlYTkyOGZhLTJjOWMtNGQ1OC1hM2I2LWFiNTQ4M2FhYjg0ZiIsInJvbGUiOiIifQ.EDSDXoL32Ng2AzIKEqUj0Eah5MHCIRc6n5WAh6lPDKE"
 
+# Keys to send notifications
+NOTIF_AUTH_KEY_ID = 'A2NH74GNDH'
+NOTIF_AUTH_KEY_PATH = 'scripts/AuthKey_A2NH74GNDH.p8'
+NOTIF_TEAM_ID = '68DY29NLF9'
+NOTIF_TOPIC = 'com.egaillera.MeteoAviso'
+

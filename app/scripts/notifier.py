@@ -1,10 +1,15 @@
 import logging
+import random
 from logging.handlers import RotatingFileHandler
 import operator
 
 from models import *
+from constants import *
 from sqlalchemy.orm.exc import NoResultFound
-from apns3 import APNs, Frame, Payload
+from apns2.client import APNsClient
+from apns2.payload import Payload
+from apns2.credentials import TokenCredentials
+
 
 
 logger = logging.getLogger("notifier_data")
@@ -23,7 +28,7 @@ notif_texts_format = {"current_temp":{">":"La temperatura en %s ha superado los 
                       "rainfall":{">":"La precipitacion en %s ha superado los %s litros: %.1f",
 				          "<":"La precipitacion en %s está por debajo de los %s litros: %.1f"}}
          
-         
+
 '''
 Change notified flag in the database to avoid notify more than once per day
 '''
@@ -65,21 +70,29 @@ def send_notification(user_id,st_code,condition,curr_value):
 	# Get the notification token from the users table
 	token_hex = User.query.filter(User.device_id == user_id).one().notif_token
 	logger.info("Notification token: %s" % token_hex)
+
+	# Get the key, key path and team_id from the constants file and build 
+	# token credentials object
+	token_credentials = TokenCredentials(auth_key_path=NOTIF_AUTH_KEY_PATH, auth_key_id=NOTIF_AUTH_KEY_ID, team_id=NOTIF_TEAM_ID)
 	
 	# Compose the text
 	notif_text = notif_texts_format[condition['dimension']][condition['quantifier']] % \
 	             (station_name,condition['value'],float(curr_value))
 	logger.info("Sending notification: %s" % notif_text)
 	
-	apns = APNs(use_sandbox=True, cert_file='scripts/MeteoAvisoPushCert.pem')
+	topic = NOTIF_TOPIC
 	payload = Payload(alert=notif_text, sound="default", badge=0)
+	client = APNsClient(credentials=token_credentials,use_sandbox=True)
 	try:
-		apns.gateway_server.send_notification(token_hex, payload)
+		#apns.gateway_server.send_notification(token_hex, payload,identifier=identifier)
+		client.send_notification(token_hex, payload,topic)
 		mark_as_notified(user_id,st_code,condition)
 		logger.info("Notification sent!")
 		notif_flag = True
 	except:
 		logger.error("Error sending notification!!")
+		print("ERROR ENVIANDO NOTIFICACION")
+
 
 	return notif_flag
 	
