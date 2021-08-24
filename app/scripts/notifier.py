@@ -79,9 +79,12 @@ def send_notification(user_id,st_code,condition,curr_value):
 	notif_text = notif_texts_format[condition['dimension']][condition['quantifier']] % \
 	             (station_name,condition['value'],float(curr_value))
 	logger.info("Sending notification: %s" % notif_text)
+
+	# Compose the dict with the station code and station name
+	custom_data = {'station_code' : st_code, 'station_name' : station_name}
 	
 	topic = NOTIF_TOPIC
-	payload = Payload(alert=notif_text, sound="default", badge=0)
+	payload = Payload(alert=notif_text, sound="default", badge=0, custom = custom_data)
 	client = APNsClient(credentials=token_credentials,use_sandbox=True)
 	try:
 		#apns.gateway_server.send_notification(token_hex, payload,identifier=identifier)
