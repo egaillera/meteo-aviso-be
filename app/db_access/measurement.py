@@ -76,7 +76,7 @@ def get_last_measurement(station_code):
 	
 
 '''
-Returns the last measurement for each station. A join with Sation is also needed 
+Returns the last measurement for each station. A JOIN with Station is also needed 
 to add station coordinates.
 
 The SQL query to get the last measurement, using window functions:
