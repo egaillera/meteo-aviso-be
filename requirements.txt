@@ -2,7 +2,7 @@ apns2==0.7.2
 appdirs==1.4.3
 click==6.7
 editdistance==0.4
-Flask==1.0
+Flask==2.3.2
 Flask-Limiter==1.0.1
 Flask-SQLAlchemy==2.2
 geopy==1.11.0
